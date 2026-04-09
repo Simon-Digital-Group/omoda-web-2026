@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, ChevronDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface HeroProps {
   title?: string;
@@ -40,10 +41,14 @@ export default function Hero({
               <source src={backgroundUrl} type="video/mp4" />
             </video>
           ) : (
-            <img
+            <OptimizedImage
               src={backgroundUrl}
               alt="OMODA JAECOO"
-              className="w-full h-full object-cover"
+              preset="hero"
+              fill
+              objectFit="cover"
+              priority
+              sizes="100vw"
             />
           )
         ) : (

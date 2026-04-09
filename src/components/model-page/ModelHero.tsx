@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Calendar } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ModelHeroProps {
   name: string;
@@ -30,18 +31,19 @@ export default function ModelHero({
 
   return (
     <section className="relative min-h-screen flex items-end pb-20 md:pb-28 overflow-hidden">
-      {/* Background image */}
+      {/* Background image — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        <img
+        <OptimizedImage
           src={heroImage}
           alt={name}
-          className="w-full h-full object-cover"
-          onError={(e) => {
-            (e.target as HTMLImageElement).style.display = "none";
-          }}
+          preset="hero"
+          fill
+          objectFit="cover"
+          priority
+          sizes="100vw"
         />
-        {/* Fallback gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+        {/* Fallback gradient (visible while loading or if no image) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] -z-10" />
 
         {/* Model name watermark */}
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

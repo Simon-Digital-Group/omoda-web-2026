@@ -5,6 +5,7 @@ import { motion, useInView, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import OptimizedImage from "@/components/OptimizedImage";
 
 interface ModelDesignSectionProps {
   heading: string;
@@ -59,19 +60,23 @@ export default function ModelDesignSection({
           )}
         >
           <AnimatePresence mode="wait">
-            <motion.img
+            <motion.div
               key={currentImage}
-              src={images[currentImage]}
-              alt={`${heading} — ${currentImage + 1}`}
               initial={{ opacity: 0, scale: 1.04 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
               transition={{ duration: 0.6, ease: "easeInOut" }}
-              className="absolute inset-0 w-full h-full object-cover"
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = "none";
-              }}
-            />
+              className="absolute inset-0"
+            >
+              <OptimizedImage
+                src={images[currentImage]}
+                alt={`${heading} — ${currentImage + 1}`}
+                preset="designSection"
+                fill
+                objectFit="cover"
+                sizes="(max-width: 1024px) 100vw, 50vw"
+              />
+            </motion.div>
           </AnimatePresence>
 
           {/* Subtle vignette on the inner edge */}

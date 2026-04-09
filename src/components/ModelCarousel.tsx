@@ -7,6 +7,7 @@ import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { carouselImageVariants, fadeInUp, staggerContainer } from "@/lib/motion";
 import AnimatedNumber from "./AnimatedNumber";
+import OptimizedImage from "./OptimizedImage";
 import { VEHICLE_MODELS } from "@/lib/data";
 import type { VehicleModel } from "@/types";
 
@@ -166,30 +167,16 @@ export default function ModelCarousel() {
                 exit="exit"
                 className="relative w-full h-full flex items-center justify-center"
               >
-                {/*
-                  NOTE: Replace with <Image> from next/image when you have real assets.
-                  Using img for placeholder flexibility.
-                */}
-                <img
+                <OptimizedImage
                   src={active.sideImage.fields.file.url}
                   alt={active.name}
-                  className="max-h-full max-w-full object-contain drop-shadow-2xl"
-                  onError={(e) => {
-                    // Fallback if image doesn't exist yet
-                    (e.target as HTMLImageElement).style.display = "none";
-                  }}
+                  preset="carouselCar"
+                  width={960}
+                  height={540}
+                  objectFit="contain"
+                  className="max-h-full max-w-full drop-shadow-2xl"
+                  sizes="(max-width: 768px) 90vw, (max-width: 1280px) 50vw, 640px"
                 />
-                {/* Fallback placeholder if no image */}
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center">
-                    <p className="text-6xl md:text-8xl font-bold text-white/[0.06]">
-                      {active.name}
-                    </p>
-                    <p className="text-sm text-text-muted mt-4">
-                      Imagen del modelo próximamente
-                    </p>
-                  </div>
-                </div>
               </motion.div>
             </AnimatePresence>
           </div>

@@ -4,6 +4,7 @@ import { useState, useRef } from "react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import OptimizedImage from "@/components/OptimizedImage";
 import type { ModelColor } from "@/lib/models-data";
 
 interface ModelColorsProps {
@@ -59,10 +60,12 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
                 transition={{ duration: 0.5 }}
                 className="relative w-full aspect-[16/7] rounded-2xl overflow-hidden"
               >
-                <img
+                <OptimizedImage
                   src={activeColor.image}
                   alt={`${modelName} — ${activeColor.name}`}
-                  className="w-full h-full object-contain"
+                  preset="colorVariant"
+                  fill
+                  objectFit="contain"
                 />
                 {/* Subtle gradient at edges */}
                 <div className="absolute inset-0 bg-gradient-to-r from-background/60 via-transparent to-background/60 pointer-events-none" />
