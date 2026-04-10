@@ -134,7 +134,7 @@ export default function ModelDesignSection({
           <motion.div variants={staggerContainer} className="max-w-lg">
             <motion.h2
               variants={fadeInUp}
-              className="text-section font-bold text-white mb-5 leading-tight"
+              className="text-section font-michroma font-bold text-white mb-5 leading-tight"
             >
               {heading}
             </motion.h2>

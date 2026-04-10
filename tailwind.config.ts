@@ -37,10 +37,12 @@ const config: Config = {
       fontFamily: {
         sans: ["var(--font-inter)", "system-ui", "sans-serif"],
         display: ["var(--font-display)", "var(--font-inter)", "sans-serif"],
+        raleway: ["var(--font-raleway)", "var(--font-inter)", "sans-serif"],
+        michroma: ["var(--font-michroma)", "sans-serif"],
       },
       fontSize: {
         "hero": ["clamp(3rem, 8vw, 7rem)", { lineHeight: "1.05", letterSpacing: "-0.02em" }],
-        "section": ["clamp(2rem, 5vw, 4rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
+        "section": ["clamp(1.75rem, 4.5vw, 3.5rem)", { lineHeight: "1.1", letterSpacing: "-0.02em" }],
         "subtitle": ["clamp(1.125rem, 2vw, 1.5rem)", { lineHeight: "1.4" }],
       },
       animation: {

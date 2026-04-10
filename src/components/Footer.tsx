@@ -9,8 +9,6 @@ export default function Footer() {
 
   return (
     <footer className="relative border-t border-white/[0.06]">
-      {/* Top glow line */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[40%] h-[1px] bg-gradient-to-r from-transparent via-accent/30 to-transparent" />
 
       <div className="container-custom py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">

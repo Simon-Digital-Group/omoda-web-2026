@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MODEL_PAGES, ALL_MODEL_SLUGS } from "@/lib/models-data";
+import { getVehicleModelBySlug } from "@/lib/contentful";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -13,23 +14,7 @@ import ModelSpecs from "@/components/model-page/ModelSpecs";
 import ModelPowertrain from "@/components/model-page/ModelPowertrain";
 import ModelCTA from "@/components/model-page/ModelCTA";
 
-/**
- * Dynamic model detail page.
- *
- * Route: /modelos/[slug]
- *
- * Section flow (based on omodaauto.co.uk/omoda-7):
- * 1. Hero          — cinematic full-screen
- * 2. Key Stats     — 4 large metrics (OMODA UK signature)
- * 3. Exterior      — full-bleed image + text
- * 4. Interior      — reversed layout
- * 5. Colors        — crystal palette (right after design, as on OMODA UK)
- * 6. Technology    — feature grid
- * 7. Safety        — feature grid
- * 8. Powertrain    — engine options
- * 9. Specs         — full technical table
- * 10. CTA          — test drive + WhatsApp
- */
+export const revalidate = 60;
 
 interface PageProps {
   params: { slug: string };
@@ -40,99 +25,113 @@ export function generateStaticParams() {
 }
 
 export function generateMetadata({ params }: PageProps): Metadata {
-  const model = MODEL_PAGES[params.slug];
-  if (!model) return {};
+  const fallback = MODEL_PAGES[params.slug];
+  if (!fallback) return {};
 
   return {
-    title: `${model.name} — ${model.tagline} | OMODA JAECOO Uruguay`,
-    description: model.heroDescription,
+    title: `${fallback.name} — ${fallback.tagline} | OMODA JAECOO Uruguay`,
+    description: fallback.heroDescription,
     openGraph: {
-      title: `${model.name} — ${model.tagline}`,
-      description: model.heroDescription,
-      images: [model.heroImage],
+      title: `${fallback.name} — ${fallback.tagline}`,
+      description: fallback.heroDescription,
+      images: [fallback.heroImage],
     },
   };
 }
 
-export default function ModelPage({ params }: PageProps) {
-  const model = MODEL_PAGES[params.slug];
+/**
+ * Helper: use CMS value if it has content, otherwise fallback to static
+ */
+function pick<T>(cms: T | undefined | null, fallback: T): T {
+  if (cms === undefined || cms === null || cms === "") return fallback;
+  if (Array.isArray(cms) && cms.length === 0) return fallback;
+  return cms;
+}
 
-  if (!model) {
+export default async function ModelPage({ params }: PageProps) {
+  const staticModel = MODEL_PAGES[params.slug];
+  const cms = await getVehicleModelBySlug(params.slug);
+
+  // Need at least static data to render
+  if (!staticModel && !cms) {
     notFound();
   }
+
+  // Merge: CMS overrides static where data exists
+  const s = staticModel;
+  const name = pick(cms?.name, s?.name || "");
+  const brand = pick(cms?.brand, s?.brand || "OMODA") as "OMODA" | "JAECOO";
 
   return (
     <main className="min-h-screen">
       <Navbar />
 
-      {/* 1. Hero */}
       <ModelHero
-        name={model.name}
-        brand={model.brand}
-        tagline={model.tagline}
-        description={model.heroDescription}
-        heroImage={model.heroImage}
-        price={model.price}
+        name={name}
+        brand={brand}
+        tagline={pick(cms?.tagline, s?.tagline || "")}
+        description={pick(cms?.description, s?.heroDescription || "")}
+        heroImage={pick(cms?.heroImage, s?.heroImage || "")}
+        price={pick(cms?.price, s?.price || "")}
       />
 
-      {/* 2. Key Stats — large numbers, OMODA UK signature */}
-      <ModelKeyStats stats={model.keyStats} brand={model.brand} />
+      <ModelKeyStats
+        stats={pick(cms?.keyStats, s?.keyStats || [])}
+        brand={brand}
+      />
 
-      {/* 3. Exterior Design */}
       <ModelDesignSection
         id="exterior"
-        heading={model.exteriorHeading}
-        description={model.exteriorDescription}
-        images={model.exteriorImages}
-        highlights={model.exteriorHighlights}
+        heading={pick(cms?.exteriorHeading, s?.exteriorHeading || "")}
+        description={pick(cms?.exteriorDescription, s?.exteriorDescription || "")}
+        images={pick(cms?.exteriorImages, s?.exteriorImages || [])}
+        highlights={pick(cms?.exteriorHighlights, s?.exteriorHighlights || [])}
       />
 
-      {/* 4. Interior Design */}
       <ModelDesignSection
         id="interior"
-        heading={model.interiorHeading}
-        description={model.interiorDescription}
-        images={model.interiorImages}
-        highlights={model.interiorHighlights}
+        heading={pick(cms?.interiorHeading, s?.interiorHeading || "")}
+        description={pick(cms?.interiorDescription, s?.interiorDescription || "")}
+        images={pick(cms?.interiorImages, s?.interiorImages || [])}
+        highlights={pick(cms?.interiorHighlights, s?.interiorHighlights || [])}
         reverse
       />
 
-      {/* 5. Colors — right after design sections, as per OMODA UK */}
       <ModelColors
-        colors={model.colors}
-        modelName={model.name}
-        brand={model.brand}
+        colors={pick(cms?.colors, s?.colors || [])}
+        modelName={name}
+        brand={brand}
       />
 
-      {/* 6. Technology */}
       <ModelFeatureGrid
         id="tecnologia"
         sectionLabel="Tecnología"
         heading="Innovación que"
         headingAccent="conecta"
-        features={model.technologyFeatures}
+        features={pick(cms?.technologyFeatures, s?.technologyFeatures || [])}
       />
 
-      {/* 7. Safety */}
       <ModelFeatureGrid
         id="seguridad"
         sectionLabel="Seguridad"
         heading="Protección que"
         headingAccent="inspira confianza"
-        features={model.safetyFeatures}
+        features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
       />
 
-      {/* 8. Powertrain */}
-      <ModelPowertrain options={model.powertrainOptions} />
+      <ModelPowertrain
+        options={pick(cms?.powertrainOptions, s?.powertrainOptions || [])}
+      />
 
-      {/* 9. Specs */}
-      <ModelSpecs specs={model.specs} modelName={model.name} />
+      <ModelSpecs
+        specs={pick(cms?.specs, s?.specs || [])}
+        modelName={name}
+      />
 
-      {/* 10. CTA */}
       <ModelCTA
-        modelName={model.name}
-        price={model.price}
-        brand={model.brand}
+        modelName={name}
+        price={pick(cms?.price, s?.price || "")}
+        brand={brand}
       />
 
       <Footer />

@@ -29,9 +29,7 @@ export default function ModelFeatureGrid({
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} id={id} className="section-padding relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-accent/[0.02] rounded-full blur-[120px]" />
+    <section ref={ref} id={id} className="section-padding relative overflow-hidden border-t border-white/[0.06]">
 
       <motion.div
         variants={staggerContainer}
@@ -41,12 +39,10 @@ export default function ModelFeatureGrid({
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-14">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
             {sectionLabel}
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white">
+          </p>
+          <h2 className="text-section font-michroma font-bold text-white">
             {heading}{" "}
             <span className="gradient-text">{headingAccent}</span>
           </h2>

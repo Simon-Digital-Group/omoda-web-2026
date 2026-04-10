@@ -49,7 +49,7 @@ export default function AnimatedNumber({
   }, [isInView, value, duration]);
 
   return (
-    <span ref={ref} className={`spec-number ${className}`}>
+    <span ref={ref} className={`spec-number font-michroma ${className}`}>
       {display.toLocaleString()}
       {suffix}
     </span>

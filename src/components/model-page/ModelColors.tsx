@@ -37,12 +37,10 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-12">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
             Colores disponibles
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white">
+          </p>
+          <h2 className="text-section font-michroma font-bold text-white">
             Elegí tu color
           </h2>
         </motion.div>
@@ -108,9 +106,6 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
               >
                 <p className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
                   {activeColor.name}
-                </p>
-                <p className="text-xs text-white/60 mt-0.5 tracking-widest uppercase">
-                  {activeColor.hex.toUpperCase()}
                 </p>
               </motion.div>
             </AnimatePresence>

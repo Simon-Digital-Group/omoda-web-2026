@@ -18,13 +18,17 @@ import type { VehicleModel } from "@/types";
  *
  * Enhanced with: Framer Motion crossfade, counter-up specs, brand-colored backgrounds.
  */
-export default function ModelCarousel() {
+interface ModelCarouselProps {
+  cmsModels?: VehicleModel[];
+}
+
+export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
-  const models = VEHICLE_MODELS;
+  const models = cmsModels && cmsModels.length > 0 ? cmsModels : VEHICLE_MODELS;
   const active = models[activeIndex];
 
   const navigate = useCallback(
@@ -75,16 +79,13 @@ export default function ModelCarousel() {
         animate={isInView ? "visible" : "hidden"}
         className="relative container-custom"
       >
-        {/* Section header */}
+        {/* Section header — centered, clean */}
         <motion.div variants={fadeInUp} className="text-center mb-12">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
             Nuestra gama
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white">
-            Elegí tu próximo{" "}
-            <span className="gradient-text">vehículo</span>
+          </p>
+          <h2 className="text-section font-michroma font-bold text-white">
+            Elegí tu próximo vehículo
           </h2>
         </motion.div>
 

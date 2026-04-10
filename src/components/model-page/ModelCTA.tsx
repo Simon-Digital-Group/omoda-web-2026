@@ -45,7 +45,7 @@ export default function ModelCTA({ modelName, price, brand }: ModelCTAProps) {
 
         <motion.h2
           variants={fadeInUp}
-          className="text-section font-bold text-white mb-3"
+          className="text-section font-michroma font-bold text-white mb-3"
         >
           {price}
         </motion.h2>

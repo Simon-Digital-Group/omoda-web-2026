@@ -5,31 +5,29 @@ import Features from "@/components/Features";
 import About from "@/components/About";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
+import { getHeroBanner, getVehicleModels } from "@/lib/contentful";
 
-/**
- * Main landing page — OMODA | JAECOO Uruguay
- *
- * Content flow:
- * 1. Hero (full-screen, video/image bg, CTA) — Motorflow-inspired
- * 2. Model Carousel (tabs + car + specs) — OMODA global-inspired
- * 3. Features (glassmorphism cards) — Landio-inspired
- * 4. About (brand story + stats)
- * 5. Contact Form (lead capture)
- * 6. Footer
- *
- * When Contentful is configured, the Hero and Models will pull from CMS.
- * For now, static data from lib/data.ts is used.
- */
-export default function Home() {
-  // TODO: When Contentful is ready, fetch here:
-  // const hero = await getHeroBanner();
-  // const models = await getVehicleModels();
+export const revalidate = 60; // revalidate every 60 seconds
+
+export default async function Home() {
+  const hero = await getHeroBanner();
+  const cmsModels = await getVehicleModels();
 
   return (
     <main className="min-h-screen">
       <Navbar />
-      <Hero />
-      <ModelCarousel />
+      <Hero
+        {...(hero
+          ? {
+              title: hero.title,
+              subtitle: hero.subtitle,
+              ctaText: hero.ctaText,
+              ctaLink: hero.ctaLink,
+              backgroundUrl: hero.backgroundUrl,
+            }
+          : {})}
+      />
+      <ModelCarousel cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
       <Features />
       <About />
       <ContactForm />

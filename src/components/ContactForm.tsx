@@ -52,9 +52,7 @@ export default function ContactForm() {
   };
 
   return (
-    <section ref={ref} id="contacto" className="section-padding relative">
-      {/* Ambient glow */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-accent/[0.03] rounded-full blur-[150px]" />
+    <section ref={ref} id="contacto" className="section-padding relative border-t border-white/[0.06]">
 
       <motion.div
         variants={staggerContainer}
@@ -62,18 +60,12 @@ export default function ContactForm() {
         animate={isInView ? "visible" : "hidden"}
         className="relative container-custom"
       >
-        {/* Header */}
-        <motion.div variants={fadeInUp} className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
-            Contacto
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white mb-4">
-            Solicitá tu{" "}
-            <span className="gradient-text">test drive</span>
+        {/* Header — direct, no fluff */}
+        <motion.div variants={fadeInUp} className="mb-16 max-w-xl">
+          <h2 className="text-section font-michroma font-bold text-white mb-4">
+            Test Drive
           </h2>
-          <p className="text-subtitle text-text-secondary max-w-2xl mx-auto">
+          <p className="text-text-secondary leading-relaxed">
             Dejanos tus datos y un asesor se comunicará contigo para coordinar
             una experiencia de manejo personalizada.
           </p>

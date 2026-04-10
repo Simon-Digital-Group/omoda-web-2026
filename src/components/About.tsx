@@ -30,14 +30,13 @@ export default function About() {
           <div>
             <motion.span
               variants={fadeInUp}
-              className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4"
+              className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4 block"
             >
-              <span className="w-8 h-[1px] bg-accent" />
               Sobre la marca
             </motion.span>
             <motion.h2
               variants={fadeInUp}
-              className="text-section font-bold text-white mb-6"
+              className="text-section font-michroma font-bold text-white mb-6"
             >
               Una nueva era{" "}
               <span className="gradient-text">automotriz</span>
@@ -79,8 +78,7 @@ export default function About() {
                 key={stat.label}
                 className="glass p-6 text-center group hover:bg-white/[0.06] transition-all duration-500"
               >
-                <stat.icon className="w-6 h-6 text-accent mx-auto mb-3 group-hover:scale-110 transition-transform" />
-                <p className="text-3xl md:text-4xl font-bold text-white mb-1">
+                <p className="text-3xl md:text-4xl font-michroma font-bold text-white mb-1">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="text-xs text-text-muted uppercase tracking-wider">

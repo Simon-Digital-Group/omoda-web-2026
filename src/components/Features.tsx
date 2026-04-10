@@ -49,9 +49,7 @@ export default function Features() {
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
   return (
-    <section ref={ref} className="section-padding relative overflow-hidden">
-      {/* Ambient glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-accent/[0.02] rounded-full blur-[150px]" />
+    <section ref={ref} className="section-padding relative overflow-hidden border-t border-white/[0.06]">
 
       <motion.div
         variants={staggerContainer}
@@ -59,36 +57,27 @@ export default function Features() {
         animate={isInView ? "visible" : "hidden"}
         className="relative container-custom"
       >
-        {/* Header */}
-        <motion.div variants={fadeInUp} className="text-center mb-16">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
+        {/* Header — left-aligned, editorial */}
+        <motion.div variants={fadeInUp} className="mb-16 max-w-2xl">
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
             Características
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white mb-4">
-            Tecnología que{" "}
-            <span className="gradient-text">inspira confianza</span>
+          </p>
+          <h2 className="text-section font-michroma font-bold text-white mb-4">
+            Tecnología que inspira confianza
           </h2>
-          <p className="text-subtitle text-text-secondary max-w-2xl mx-auto">
+          <p className="text-text-secondary leading-relaxed">
             Cada modelo integra lo último en innovación automotriz, diseño y seguridad.
           </p>
         </motion.div>
 
-        {/* Feature cards grid — glassmorphism style like Landio */}
+        {/* Feature cards — 2x3 grid, solid surfaces */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {FEATURES.map((feature, i) => (
             <motion.div
               key={feature.title}
               variants={fadeInUp}
-              className="glass group p-8 hover:bg-white/[0.06] transition-all duration-500
-                         hover:border-white/[0.12] hover:shadow-lg hover:shadow-accent/[0.02]"
+              className="group p-8 bg-surface border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300"
             >
-              <div className="w-12 h-12 rounded-xl bg-accent/[0.08] border border-accent/[0.15]
-                              flex items-center justify-center mb-5
-                              group-hover:bg-accent/[0.12] transition-colors duration-300">
-                <feature.icon className="w-5 h-5 text-accent" />
-              </div>
               <h3 className="text-lg font-semibold text-white mb-2">
                 {feature.title}
               </h3>

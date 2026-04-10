@@ -45,12 +45,10 @@ export default function ModelPowertrain({ options }: ModelPowertrainProps) {
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-14">
-          <span className="inline-flex items-center gap-2 text-sm text-text-muted uppercase tracking-widest mb-4">
-            <span className="w-8 h-[1px] bg-accent" />
+          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
             Motorización
-            <span className="w-8 h-[1px] bg-accent" />
-          </span>
-          <h2 className="text-section font-bold text-white mb-4">
+          </p>
+          <h2 className="text-section font-michroma font-bold text-white mb-4">
             Elegí tu <span className="gradient-text">potencia</span>
           </h2>
           <p className="text-text-secondary max-w-xl mx-auto">

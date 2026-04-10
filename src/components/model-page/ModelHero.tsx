@@ -65,36 +65,13 @@ export default function ModelHero({
         className="relative z-10 container-custom w-full"
       >
         <div className="max-w-2xl">
-          {/* Brand badge */}
-          <motion.div variants={fadeInUp} className="mb-4">
-            <span className={`text-sm font-medium uppercase tracking-widest ${brandColor}`}>
-              {brand}
-            </span>
-          </motion.div>
-
           {/* Model name */}
           <motion.h1
             variants={fadeInUp}
-            className="text-hero font-bold text-white mb-3"
+            className="text-[clamp(2rem,6vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
           >
             {name}
           </motion.h1>
-
-          {/* Tagline */}
-          <motion.p
-            variants={fadeInUp}
-            className="text-2xl md:text-3xl font-light text-text-secondary mb-4"
-          >
-            {tagline}
-          </motion.p>
-
-          {/* Description */}
-          <motion.p
-            variants={fadeInUp}
-            className="text-text-secondary leading-relaxed mb-8 max-w-lg"
-          >
-            {description}
-          </motion.p>
 
           {/* Price + CTAs */}
           <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-4">
