@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Wrench, MessageCircle } from "lucide-react";
+import { MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
@@ -23,18 +23,9 @@ export default function TalleresPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[700px] h-[400px] bg-accent/[0.04] rounded-full blur-[120px] pointer-events-none" />
 
         <div className="container-custom relative z-10">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-accent/[0.10] border border-accent/[0.20]">
-              <Wrench className="w-5 h-5 text-accent" />
-            </span>
-            <span className="text-sm font-medium text-accent uppercase tracking-widest">
-              Red de Servicio
-            </span>
-          </div>
-
-          <h1 className="text-hero font-bold text-white mb-4 max-w-2xl leading-tight">
+          <h1 className="text-section font-michroma font-bold text-white uppercase mb-6 max-w-2xl leading-tight">
             Talleres<br />
-            <span className="gradient-text">Autorizados</span>
+            Autorizados
           </h1>
           <p className="text-text-secondary text-lg max-w-xl leading-relaxed mb-8">
             {TALLERES.length} talleres en todo el país. Técnicos certificados,

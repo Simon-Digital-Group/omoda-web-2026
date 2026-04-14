@@ -79,21 +79,24 @@
 
   /* Button styles */
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-accent text-background font-medium
+    @apply inline-flex w-full sm:w-auto justify-center items-center gap-2 px-7 py-3.5
+           rounded-[12px] bg-accent text-background font-medium
            uppercase text-sm tracking-wider
            transition-all duration-300 hover:bg-accent-light
            active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-white text-background font-medium
+    @apply inline-flex w-full sm:w-auto justify-center items-center gap-2 px-7 py-3.5
+           rounded-[12px] bg-white text-background font-medium
            uppercase text-sm tracking-wider
            transition-all duration-300 hover:bg-white/90
            active:scale-[0.98];
   }
 
   .btn-outline {
-    @apply inline-flex items-center gap-2 px-7 py-3.5 bg-transparent text-white font-medium
+    @apply inline-flex w-full sm:w-auto justify-center items-center gap-2 px-7 py-3.5
+           rounded-[12px] bg-transparent text-white font-medium
            uppercase text-sm tracking-wider
            border border-white/20 transition-all duration-300
            hover:bg-white/[0.05] hover:border-white/40

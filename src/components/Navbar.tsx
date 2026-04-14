@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Phone, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { VEHICLE_MODELS } from "@/lib/data";
@@ -11,7 +11,7 @@ const OMODA_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "OMODA");
 const JAECOO_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "JAECOO");
 
 const LINK_CLASS =
-  "relative px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
+  "relative px-4 py-2 text-sm text-white hover:text-accent transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -80,7 +80,7 @@ export default function Navbar() {
                     "flex items-center gap-1.5 px-4 py-2 text-sm transition-colors duration-300 rounded-full",
                     modelsOpen
                       ? "text-white bg-white/[0.05]"
-                      : "text-text-secondary hover:text-white hover:bg-white/[0.05]"
+                      : "text-white hover:text-accent hover:bg-white/[0.05]"
                   )}
                 >
                   Modelos
@@ -167,8 +167,8 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/#contacto"
-              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-text-secondary
-                         hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]"
+              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-white
+                         hover:text-accent transition-colors duration-300 rounded-full hover:bg-white/[0.05]"
             >
               Contacto
             </Link>
@@ -176,7 +176,6 @@ export default function Navbar() {
               href="/#contacto"
               className="hidden lg:inline-flex btn-primary text-sm"
             >
-              <Phone className="w-4 h-4" />
               Test Drive
             </Link>
             <button
@@ -331,7 +330,6 @@ export default function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className="btn-primary mt-2"
                 >
-                  <Phone className="w-5 h-5" />
                   Solicitar Test Drive
                 </Link>
               </motion.div>

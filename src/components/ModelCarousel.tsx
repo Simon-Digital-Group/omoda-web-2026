@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence, useInView } from "framer-motion";
-import { ChevronLeft, ChevronRight, ArrowRight, Fuel, Zap, Droplets } from "lucide-react";
+import { ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 import { useRef } from "react";
 import { cn } from "@/lib/utils";
 import { carouselImageVariants, fadeInUp, staggerContainer } from "@/lib/motion";
@@ -41,17 +41,6 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
 
   const prev = () => navigate(activeIndex === 0 ? models.length - 1 : activeIndex - 1);
   const next = () => navigate(activeIndex === models.length - 1 ? 0 : activeIndex + 1);
-
-  const fuelIcon = (type: string) => {
-    switch (type) {
-      case "Eléctrico":
-        return <Zap className="w-4 h-4" />;
-      case "Híbrido":
-        return <Droplets className="w-4 h-4" />;
-      default:
-        return <Fuel className="w-4 h-4" />;
-    }
-  };
 
   // Brand-specific background tint
   const bgTint =
@@ -122,7 +111,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           {/* Navigation arrows */}
           <button
             onClick={prev}
-            className="absolute left-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full
+            className="absolute -left-2 lg:-left-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full
                        bg-white/[0.05] border border-white/[0.08] text-white/60
                        hover:bg-white/[0.1] hover:text-white transition-all duration-300
                        hidden md:flex items-center justify-center"
@@ -132,7 +121,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           </button>
           <button
             onClick={next}
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full
+            className="absolute -right-2 lg:-right-6 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full
                        bg-white/[0.05] border border-white/[0.08] text-white/60
                        hover:bg-white/[0.1] hover:text-white transition-all duration-300
                        hidden md:flex items-center justify-center"
@@ -142,7 +131,10 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           </button>
 
           {/* Car image with watermark name */}
-          <div className="relative h-[300px] sm:h-[400px] md:h-[500px] flex items-center justify-center mx-12">
+          <div className="relative aspect-[4/3] sm:aspect-auto sm:h-[440px] md:h-[520px] mx-4 md:mx-20
+                          rounded-[24px] overflow-hidden
+                          bg-white/[0.02] border border-white/[0.06]
+                          flex items-center justify-center">
             {/* Model name watermark behind */}
             <AnimatePresence mode="wait">
               <motion.span
@@ -151,7 +143,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
                 animate={{ opacity: 0.04, scale: 1 }}
                 exit={{ opacity: 0, scale: 1.05 }}
                 transition={{ duration: 0.4 }}
-                className="absolute inset-0 flex items-center justify-center text-[12rem] sm:text-[16rem] md:text-[20rem]
+                className="absolute inset-0 flex items-center justify-center text-[10rem] sm:text-[16rem] md:text-[20rem]
                            font-bold text-white select-none pointer-events-none leading-none"
               >
                 {active.name.split(" ")[1] || active.name}
@@ -166,17 +158,16 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
                 initial="enter"
                 animate="center"
                 exit="exit"
-                className="relative w-full h-full flex items-center justify-center"
+                className="relative w-full h-full"
               >
                 <OptimizedImage
                   src={active.sideImage.fields.file.url}
                   alt={active.name}
                   preset="carouselCar"
-                  width={960}
-                  height={540}
-                  objectFit="contain"
-                  className="max-h-full max-w-full drop-shadow-2xl"
-                  sizes="(max-width: 768px) 90vw, (max-width: 1280px) 50vw, 640px"
+                  fill
+                  objectFit="cover"
+                  className="drop-shadow-2xl"
+                  sizes="(max-width: 768px) 90vw, (max-width: 1280px) 60vw, 720px"
                 />
               </motion.div>
             </AnimatePresence>
@@ -185,29 +176,27 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           {/* Specs bar */}
           <motion.div
             variants={fadeInUp}
-            className="flex flex-wrap items-center justify-center gap-6 md:gap-0 mt-8"
+            className="flex flex-col md:flex-row flex-wrap items-center justify-center gap-6 md:gap-10 lg:gap-14 mt-8"
           >
-            <SpecItem label="LARGO" value={active.lengthMm} suffix="mm" />
-            <SpecDivider />
-            <SpecItem label="ANCHO" value={active.widthMm} suffix="mm" />
-            <SpecDivider />
-            <SpecItem label="ALTO" value={active.heightMm} suffix="mm" />
-            <SpecDivider />
-            <SpecItem label="DISTANCIA ENTRE EJES" value={active.wheelbaseMm} suffix="mm" />
-            <SpecDivider className="hidden md:block" />
+            {/* Specs block */}
+            <div className="flex flex-wrap items-center justify-center gap-6 md:gap-0">
+              <SpecItem label="LARGO" value={active.lengthMm} suffix="mm" />
+              <SpecDivider />
+              <SpecItem label="ANCHO" value={active.widthMm} suffix="mm" />
+              <SpecDivider />
+              <SpecItem label="ALTO" value={active.heightMm} suffix="mm" />
+              <SpecDivider />
+              <SpecItem label="DISTANCIA ENTRE EJES" value={active.wheelbaseMm} suffix="mm" />
+            </div>
 
-            {/* Fuel type badge + price + CTA */}
-            <div className="flex items-center gap-4 md:ml-4">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.08] text-xs text-text-secondary">
-                {fuelIcon(active.fuelType)}
-                {active.fuelType}
-              </span>
-              <span className="text-sm text-text-secondary">{active.price}</span>
+            {/* Price + CTA block — stacked on mobile, inline on desktop */}
+            <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 w-full md:w-auto">
+              <span className="text-xl md:text-2xl font-semibold text-white">{active.price}</span>
               <a
                 href={`/modelos/${active.slug}`}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full
+                className="inline-flex justify-center items-center gap-1.5 px-4 py-2 rounded-[12px]
                            border border-white/20 text-sm text-white hover:bg-white/[0.05]
-                           transition-all duration-300"
+                           transition-all duration-300 w-full md:w-auto"
               >
                 Ver Modelo
                 <ArrowRight className="w-3.5 h-3.5" />
