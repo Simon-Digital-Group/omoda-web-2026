@@ -112,10 +112,10 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
           </div>
         </motion.div>
 
-        {/* Color swatches row */}
+        {/* Color swatches + names — wraps into rows on smaller viewports */}
         <motion.div
           variants={fadeInUp}
-          className="flex justify-center items-center gap-3 md:gap-4"
+          className="flex flex-wrap justify-center items-start gap-x-4 gap-y-6 md:gap-x-5 max-w-3xl mx-auto"
         >
           {colors.map((color, i) => (
             <button
@@ -123,45 +123,41 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
               onClick={() => setSelected(i)}
               title={color.name}
               aria-label={color.name}
-              className={cn(
-                "relative rounded-full transition-all duration-300 flex-shrink-0",
-                i === selected
-                  ? cn(
-                      "w-12 h-12 ring-2 ring-offset-2 ring-offset-background",
-                      isOmoda ? "ring-accent" : "ring-accent-alt"
-                    )
-                  : "w-9 h-9 hover:scale-110 opacity-70 hover:opacity-100"
-              )}
-              style={{ backgroundColor: color.hex }}
+              className="flex flex-col items-center gap-2 group w-[68px] md:w-[80px]"
             >
-              {/* Inner border for very light/white colors */}
-              <span className="absolute inset-0 rounded-full border border-white/15" />
-              {/* Selected indicator */}
-              {i === selected && (
-                <span className={cn(
-                  "absolute inset-0 rounded-full border-2",
-                  isOmoda ? "border-accent/40" : "border-accent-alt/40"
-                )} />
-              )}
+              <span
+                className={cn(
+                  "relative rounded-full transition-all duration-300",
+                  i === selected
+                    ? cn(
+                        "w-12 h-12 ring-2 ring-offset-2 ring-offset-background",
+                        isOmoda ? "ring-accent" : "ring-accent-alt"
+                      )
+                    : "w-9 h-9 group-hover:scale-110 opacity-70 group-hover:opacity-100"
+                )}
+                style={{ backgroundColor: color.hex }}
+              >
+                {/* Inner border for very light/white colors */}
+                <span className="absolute inset-0 rounded-full border border-white/15" />
+                {/* Selected indicator */}
+                {i === selected && (
+                  <span
+                    className={cn(
+                      "absolute inset-0 rounded-full border-2",
+                      isOmoda ? "border-accent/40" : "border-accent-alt/40"
+                    )}
+                  />
+                )}
+              </span>
+              <span
+                className={cn(
+                  "text-[11px] md:text-xs transition-colors duration-300 text-center leading-tight",
+                  i === selected ? "text-white" : "text-text-muted"
+                )}
+              >
+                {color.name}
+              </span>
             </button>
-          ))}
-        </motion.div>
-
-        {/* Color names row */}
-        <motion.div
-          variants={fadeInUp}
-          className="flex justify-center items-center gap-3 md:gap-4 mt-4"
-        >
-          {colors.map((color, i) => (
-            <p
-              key={color.name}
-              className={cn(
-                "text-xs transition-colors duration-300 text-center min-w-[2.25rem]",
-                i === selected ? "text-white" : "text-text-muted"
-              )}
-            >
-              {color.name}
-            </p>
           ))}
         </motion.div>
       </motion.div>

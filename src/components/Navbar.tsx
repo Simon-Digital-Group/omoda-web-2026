@@ -55,7 +55,7 @@ export default function Navbar() {
             <img
               src="/images/omoda-jaecoo-logo.svg"
               alt="OMODA | JAECOO Uruguay"
-              className="h-5 w-auto transition-opacity duration-300 group-hover:opacity-75"
+              className="h-4 md:h-4 w-auto transition-opacity duration-300 group-hover:opacity-75"
             />
           </Link>
 
@@ -64,7 +64,9 @@ export default function Navbar() {
             <div
               className={cn(
                 "flex items-center gap-1 px-2 py-2 rounded-full transition-all duration-500",
-                scrolled ? "bg-white/[0.04]" : "bg-transparent"
+                scrolled
+                  ? "bg-transparent border border-transparent"
+                  : "bg-white/[0.04] backdrop-blur-md border border-white/[0.06]"
               )}
             >
               {/* Inicio */}

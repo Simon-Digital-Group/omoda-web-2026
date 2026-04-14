@@ -14,11 +14,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-lg font-bold tracking-wider text-white">OMODA</span>
-              <span className="text-text-muted font-light">|</span>
-              <span className="text-lg font-bold tracking-wider text-white">JAECOO</span>
-            </div>
+            <img
+              src="/images/omoda-jaecoo-logo.svg"
+              alt="OMODA | JAECOO Uruguay"
+              className="h-5 w-auto mb-5"
+            />
             <p className="text-sm text-text-secondary leading-relaxed mb-6">
               La nueva generación de SUVs premium en Uruguay. Diseño, tecnología
               y rendimiento excepcional.
