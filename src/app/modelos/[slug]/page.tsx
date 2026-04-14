@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { MODEL_PAGES, ALL_MODEL_SLUGS } from "@/lib/models-data";
+import { MODEL_PAGES, ALL_MODEL_SLUGS, type PowertrainOption } from "@/lib/models-data";
 import { getVehicleModelBySlug } from "@/lib/contentful";
 
 import Navbar from "@/components/Navbar";
@@ -120,7 +120,7 @@ export default async function ModelPage({ params }: PageProps) {
       />
 
       <ModelPowertrain
-        options={pick(cms?.powertrainOptions, s?.powertrainOptions || [])}
+        options={pick<PowertrainOption[]>(cms?.powertrainOptions as PowertrainOption[] | undefined, s?.powertrainOptions || [])}
       />
 
       <ModelSpecs
