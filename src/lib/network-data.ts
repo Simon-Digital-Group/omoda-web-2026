@@ -356,10 +356,10 @@ export const TALLERES: NetworkLocation[] = [
 ];
 
 // Sorted unique departments for filter UI
-export const CONCESIONARIO_DEPARTMENTS = [
-  ...new Set(CONCESIONARIOS.map((c) => c.department)),
-].sort();
+export const CONCESIONARIO_DEPARTMENTS = Array.from(
+  new Set(CONCESIONARIOS.map((c) => c.department))
+).sort();
 
-export const TALLER_DEPARTMENTS = [
-  ...new Set(TALLERES.map((t) => t.department)),
-].sort();
+export const TALLER_DEPARTMENTS = Array.from(
+  new Set(TALLERES.map((t) => t.department))
+).sort();

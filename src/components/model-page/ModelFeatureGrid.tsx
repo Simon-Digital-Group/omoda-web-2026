@@ -53,7 +53,7 @@ export default function ModelFeatureGrid({
           {features.map((feature, i) => {
             // Dynamically resolve icon from lucide-react
             const IconComponent =
-              (LucideIcons as Record<string, React.ComponentType<{ className?: string }>>)[
+              (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[
                 feature.icon
               ] || LucideIcons.Star;
 
