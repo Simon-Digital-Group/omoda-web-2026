@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function ConcesionariosPage() {
   return (
-    <main className="min-h-screen">
+    <main id="main-content" className="min-h-screen">
       <Navbar />
 
       {/* Hero */}

@@ -42,6 +42,18 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
   const prev = () => navigate(activeIndex === 0 ? models.length - 1 : activeIndex - 1);
   const next = () => navigate(activeIndex === models.length - 1 ? 0 : activeIndex + 1);
 
+  // Swipe support for mobile
+  const touchStartX = useRef(0);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 50) {
+      diff > 0 ? next() : prev();
+    }
+  };
+
   // Brand-specific background tint
   const bgTint =
     active.brand === "OMODA"
@@ -88,7 +100,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
               key={model.slug}
               onClick={() => navigate(i)}
               className={cn(
-                "relative px-5 py-3 text-sm font-medium whitespace-nowrap rounded-full transition-all duration-300",
+                "relative px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap rounded-full transition-all duration-300",
                 i === activeIndex
                   ? "text-white"
                   : "text-text-muted hover:text-text-secondary"
@@ -131,10 +143,14 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           </button>
 
           {/* Car image with watermark name */}
-          <div className="relative aspect-[4/3] sm:aspect-auto sm:h-[440px] md:h-[520px] mx-4 md:mx-20
+          <div
+            className="relative aspect-[4/3] sm:aspect-auto sm:h-[440px] md:h-[520px] mx-4 md:mx-20
                           rounded-[24px] overflow-hidden
                           bg-white/[0.02] border border-white/[0.06]
-                          flex items-center justify-center">
+                          flex items-center justify-center"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+          >
             {/* Model name watermark behind */}
             <AnimatePresence mode="wait">
               <motion.span
@@ -162,7 +178,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
               >
                 <OptimizedImage
                   src={active.sideImage?.fields?.file?.url || ""}
-                  alt={active.name}
+                  alt={`${active.name} SUV vista lateral`}
                   preset="carouselCar"
                   fill
                   objectFit="cover"
@@ -191,7 +207,10 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
 
             {/* Price + CTA block — stacked on mobile, inline on desktop */}
             <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 w-full md:w-auto">
-              <span className="text-xl md:text-2xl font-semibold text-white">{active.price}</span>
+              <span className="text-xl md:text-2xl text-white">
+                <span className="font-light">Desde </span>
+                <span className="font-semibold">{active.price}</span>
+              </span>
               <a
                 href={`/modelos/${active.slug}`}
                 className="inline-flex justify-center items-center gap-1.5 px-4 py-2 rounded-[12px]
@@ -205,16 +224,16 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           </motion.div>
 
           {/* Mobile swipe dots */}
-          <div className="flex justify-center gap-2 mt-8 md:hidden">
+          <div className="flex justify-center gap-3 mt-8 md:hidden">
             {models.map((_, i) => (
               <button
                 key={i}
                 onClick={() => navigate(i)}
                 className={cn(
-                  "w-2 h-2 rounded-full transition-all duration-300",
+                  "h-3 rounded-full transition-all duration-300",
                   i === activeIndex
-                    ? "bg-accent w-6"
-                    : "bg-white/20 hover:bg-white/40"
+                    ? "bg-accent w-8"
+                    : "w-3 bg-white/20 hover:bg-white/40"
                 )}
                 aria-label={`Modelo ${i + 1}`}
               />

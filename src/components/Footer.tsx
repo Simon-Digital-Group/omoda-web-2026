@@ -9,7 +9,7 @@ export default function Footer() {
   return (
     <footer className="relative border-t border-white/[0.06]">
 
-      <div className="container-custom py-16">
+      <div className="container-custom py-8 sm:py-12 md:py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div>

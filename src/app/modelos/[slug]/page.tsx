@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MODEL_PAGES, ALL_MODEL_SLUGS } from "@/lib/models-data";
-import { getVehicleModelBySlug } from "@/lib/contentful";
+import { getVehicleModelBySlug, getVehicleModels } from "@/lib/contentful";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -50,7 +50,10 @@ function pick<T>(cms: T | undefined | null, fallback: T): T {
 
 export default async function ModelPage({ params }: PageProps) {
   const staticModel = MODEL_PAGES[params.slug];
-  const cms = await getVehicleModelBySlug(params.slug);
+  const [cms, cmsModels] = await Promise.all([
+    getVehicleModelBySlug(params.slug),
+    getVehicleModels(),
+  ]);
 
   // Need at least static data to render
   if (!staticModel && !cms) {
@@ -63,8 +66,8 @@ export default async function ModelPage({ params }: PageProps) {
   const brand = pick(cms?.brand, s?.brand || "OMODA") as "OMODA" | "JAECOO";
 
   return (
-    <main className="min-h-screen">
-      <Navbar />
+    <main id="main-content" className="min-h-screen">
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
 
       <ModelHero
         name={name}
@@ -132,6 +135,25 @@ export default async function ModelPage({ params }: PageProps) {
       />
 
       <Footer />
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "Vehicle",
+            name: name,
+            brand: { "@type": "Brand", name: brand },
+            description: pick(cms?.description, s?.heroDescription || ""),
+            offers: {
+              "@type": "Offer",
+              price: pick(cms?.price, s?.price || ""),
+              priceCurrency: "USD",
+              availability: "https://schema.org/InStock",
+            },
+          }),
+        }}
+      />
     </main>
   );
 }

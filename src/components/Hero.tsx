@@ -14,7 +14,7 @@ interface HeroProps {
 }
 
 export default function Hero({
-  title = "OMODA 5",
+  title = "SUVs Premium\nen Uruguay",
   subtitle = "Descubrí OMODA & JAECOO: la generación de SUVs premium que combina diseño audaz, tecnología de vanguardia y rendimiento excepcional.",
   ctaText = "Explorar Modelos",
   ctaLink = "#modelos",
@@ -43,7 +43,7 @@ export default function Hero({
           ) : (
             <OptimizedImage
               src={backgroundUrl}
-              alt="OMODA JAECOO"
+              alt="OMODA JAECOO SUVs premium en Uruguay"
               preset="hero"
               fill
               objectFit="cover"
@@ -78,7 +78,7 @@ export default function Hero({
           </motion.h1>
 
           {/* CTAs */}
-          <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row gap-4">
             <a href={ctaLink} className="btn-primary text-base">
               {ctaText}
             </a>

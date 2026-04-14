@@ -6,14 +6,19 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { VEHICLE_MODELS } from "@/lib/data";
+import type { VehicleModel } from "@/types";
 
-const OMODA_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "OMODA");
-const JAECOO_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "JAECOO");
+interface NavbarProps {
+  cmsModels?: VehicleModel[];
+}
 
 const LINK_CLASS =
-  "relative px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
+  "relative px-4 py-2 text-sm text-white/80 hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
 
-export default function Navbar() {
+export default function Navbar({ cmsModels }: NavbarProps) {
+  const allModels = cmsModels && cmsModels.length > 0 ? cmsModels : VEHICLE_MODELS;
+  const OMODA_MODELS = allModels.filter((m) => m.brand?.toUpperCase() === "OMODA");
+  const JAECOO_MODELS = allModels.filter((m) => m.brand?.toUpperCase() === "JAECOO");
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [modelsOpen, setModelsOpen] = useState(false);
@@ -78,11 +83,14 @@ export default function Navbar() {
               <div ref={modelsRef} className="relative">
                 <button
                   onClick={() => setModelsOpen((p) => !p)}
+                  onKeyDown={(e) => e.key === "Escape" && setModelsOpen(false)}
+                  aria-expanded={modelsOpen}
+                  aria-haspopup="true"
                   className={cn(
                     "flex items-center gap-1.5 px-4 py-2 text-sm transition-colors duration-300 rounded-full",
                     modelsOpen
                       ? "text-white bg-white/[0.05]"
-                      : "text-text-secondary hover:text-white hover:bg-white/[0.05]"
+                      : "text-white/80 hover:text-white hover:bg-white/[0.05]"
                   )}
                 >
                   Modelos
@@ -177,7 +185,7 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/#contacto"
-              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-text-secondary
+              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-white/80
                          hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]"
             >
               Contacto
@@ -190,7 +198,7 @@ export default function Navbar() {
             </Link>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="lg:hidden p-2 text-white hover:text-accent transition-colors"
+              className="lg:hidden p-3 text-white hover:text-accent transition-colors"
               aria-label="Menú"
             >
               {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -208,6 +216,7 @@ export default function Navbar() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 bg-background/95 backdrop-blur-xl lg:hidden overflow-y-auto"
+            onKeyDown={(e) => e.key === "Escape" && setMobileOpen(false)}
           >
             <nav className="flex flex-col items-center justify-center min-h-full gap-6 py-24">
               {/* Inicio */}
@@ -219,7 +228,7 @@ export default function Navbar() {
                 <Link
                   href="/#inicio"
                   onClick={() => setMobileOpen(false)}
-                  className="text-3xl font-light text-white hover:text-accent transition-colors"
+                  className="text-2xl sm:text-3xl font-light text-white hover:text-accent transition-colors"
                 >
                   Inicio
                 </Link>
@@ -234,7 +243,7 @@ export default function Navbar() {
               >
                 <button
                   onClick={() => setMobileModelsOpen((p) => !p)}
-                  className="flex items-center gap-2 text-3xl font-light text-white hover:text-accent transition-colors"
+                  className="flex items-center gap-2 text-2xl sm:text-3xl font-light text-white hover:text-accent transition-colors"
                 >
                   Modelos
                   <ChevronDown
@@ -299,7 +308,7 @@ export default function Navbar() {
                 <Link
                   href="/concesionarios"
                   onClick={() => setMobileOpen(false)}
-                  className="text-3xl font-light text-white hover:text-accent transition-colors"
+                  className="text-2xl sm:text-3xl font-light text-white hover:text-accent transition-colors"
                 >
                   Concesionarios
                 </Link>
@@ -314,7 +323,7 @@ export default function Navbar() {
                 <Link
                   href="/talleres"
                   onClick={() => setMobileOpen(false)}
-                  className="text-3xl font-light text-white hover:text-accent transition-colors"
+                  className="text-2xl sm:text-3xl font-light text-white hover:text-accent transition-colors"
                 >
                   Talleres
                 </Link>
@@ -329,7 +338,7 @@ export default function Navbar() {
                 <Link
                   href="/#contacto"
                   onClick={() => setMobileOpen(false)}
-                  className="text-3xl font-light text-white hover:text-accent transition-colors"
+                  className="text-2xl sm:text-3xl font-light text-white hover:text-accent transition-colors"
                 >
                   Contacto
                 </Link>

@@ -46,9 +46,10 @@ export default function ModelCTA({ modelName, price, brand, brochureUrl }: Model
 
         <motion.h2
           variants={fadeInUp}
-          className="text-section font-michroma font-bold text-white mb-3"
+          className="text-section text-white mb-3"
         >
-          {price}
+          <span className="font-light">Desde </span>
+          <span className="font-michroma font-bold">{price}</span>
         </motion.h2>
 
         <motion.p

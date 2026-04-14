@@ -112,11 +112,15 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
         {/* Color swatches row */}
         <motion.div
           variants={fadeInUp}
+          role="radiogroup"
+          aria-label="Colores disponibles"
           className="flex justify-center items-center gap-3 md:gap-4"
         >
           {colors.map((color, i) => (
             <button
               key={color.name}
+              role="radio"
+              aria-checked={i === selected}
               onClick={() => setSelected(i)}
               title={color.name}
               aria-label={color.name}

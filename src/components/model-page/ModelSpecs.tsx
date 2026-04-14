@@ -40,7 +40,7 @@ export default function ModelSpecs({ specs, modelName }: ModelSpecsProps) {
             <motion.div
               key={group.category}
               variants={fadeInUp}
-              className="glass p-6"
+              className="glass p-4 sm:p-6"
             >
               <h3 className="text-sm font-semibold text-accent uppercase tracking-wider mb-5 pb-3 border-b border-white/[0.06]">
                 {group.category}

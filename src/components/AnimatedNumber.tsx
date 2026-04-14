@@ -50,7 +50,7 @@ export default function AnimatedNumber({
 
   return (
     <span ref={ref} className={`spec-number font-michroma ${className}`}>
-      {display.toLocaleString()}
+      {display.toLocaleString("es-UY")}
       {suffix}
     </span>
   );

@@ -74,13 +74,13 @@ export default function ModelHero({
           {/* Model name */}
           <motion.h1
             variants={fadeInUp}
-            className="text-[clamp(1.5rem,5vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
+            className="text-[clamp(1.25rem,8vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
           >
             {name}
           </motion.h1>
 
           {/* Price + CTAs */}
-          <motion.div variants={fadeInUp} className="flex items-center gap-4">
+          <motion.div variants={fadeInUp} className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
             <span className="text-xl text-white">
               <span className="font-light">Desde </span>
               <span className="font-semibold">{price}</span>

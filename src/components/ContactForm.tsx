@@ -76,7 +76,7 @@ export default function ContactForm() {
           <motion.form
             variants={fadeInUp}
             onSubmit={handleSubmit}
-            className="lg:col-span-3 glass p-8 md:p-10"
+            className="lg:col-span-3 glass p-5 sm:p-8 md:p-10"
           >
             <div className="grid sm:grid-cols-2 gap-5 mb-5">
               <InputField
@@ -106,15 +106,16 @@ export default function ContactForm() {
                 placeholder="+598 99 123 456"
               />
               <div>
-                <label className="block text-sm text-text-secondary mb-2">
+                <label htmlFor="model" className="block text-sm text-text-secondary mb-2">
                   Modelo de interés
                 </label>
                 <select
+                  id="model"
                   name="model"
                   value={formData.model}
                   onChange={handleChange}
                   className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                             text-white text-sm outline-none focus:border-accent/50
+                             text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
                              transition-colors duration-300 appearance-none cursor-pointer"
                 >
                   <option value="" className="bg-surface">
@@ -130,17 +131,18 @@ export default function ContactForm() {
             </div>
 
             <div className="mb-6">
-              <label className="block text-sm text-text-secondary mb-2">
+              <label htmlFor="message" className="block text-sm text-text-secondary mb-2">
                 Mensaje (opcional)
               </label>
               <textarea
+                id="message"
                 name="message"
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
                 placeholder="¿Tenés alguna consulta específica?"
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                           text-white text-sm outline-none focus:border-accent/50
+                           text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
                            transition-colors duration-300 resize-none"
               />
             </div>
@@ -153,7 +155,7 @@ export default function ContactForm() {
                 status === "submitting" && "opacity-70 cursor-not-allowed"
               )}
             >
-              {status === "submitting" ? "Enviando..." : "Enviar Solicitud"}
+              {status === "submitting" ? "Enviando..." : "Agendar Test Drive"}
             </button>
 
             {/* Status messages */}
@@ -184,19 +186,19 @@ export default function ContactForm() {
             variants={fadeInUp}
             className="lg:col-span-2 flex flex-col gap-6"
           >
-            <div className="glass p-6">
+            <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Concesionario</h3>
               <p className="text-sm text-text-secondary leading-relaxed">
                 {SITE_CONFIG.address}
               </p>
             </div>
 
-            <div className="glass p-6">
+            <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Teléfono</h3>
               <p className="text-sm text-text-secondary">{SITE_CONFIG.phone}</p>
             </div>
 
-            <div className="glass p-6">
+            <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Email</h3>
               <p className="text-sm text-text-secondary">{SITE_CONFIG.email}</p>
             </div>
@@ -205,7 +207,7 @@ export default function ContactForm() {
               href={SITE_CONFIG.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
-              className="glass p-6 group hover:border-white/[0.12] transition-all duration-300"
+              className="glass p-4 sm:p-6 group hover:border-white/[0.12] transition-all duration-300"
             >
               <h3 className="text-sm font-semibold text-white mb-0.5">WhatsApp</h3>
               <p className="text-sm text-text-secondary group-hover:text-accent transition-colors">
@@ -239,8 +241,9 @@ function InputField({
 }) {
   return (
     <div>
-      <label className="block text-sm text-text-secondary mb-2">{label}</label>
+      <label htmlFor={name} className="block text-sm text-text-secondary mb-2">{label}</label>
       <input
+        id={name}
         type={type}
         name={name}
         value={value}
@@ -248,7 +251,7 @@ function InputField({
         required={required}
         placeholder={placeholder}
         className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                   text-white text-sm outline-none focus:border-accent/50
+                   text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
                    transition-colors duration-300 placeholder:text-text-muted"
       />
     </div>

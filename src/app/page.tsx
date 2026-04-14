@@ -14,8 +14,8 @@ export default async function Home() {
   const cmsModels = await getVehicleModels();
 
   return (
-    <main className="min-h-screen">
-      <Navbar />
+    <main id="main-content" className="min-h-screen">
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
       <Hero
         {...(hero
           ? {
