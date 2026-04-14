@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowDown, Calendar } from "lucide-react";
+import { ArrowDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
 
@@ -33,24 +33,30 @@ export default function ModelHero({
     <section className="relative min-h-screen flex items-end pb-20 md:pb-28 overflow-hidden">
       {/* Background image — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        <OptimizedImage
-          src={heroImage}
-          alt={name}
-          preset="hero"
-          fill
-          objectFit="cover"
-          priority
-          sizes="100vw"
-        />
+        {heroImage.endsWith(".mp4") || heroImage.endsWith(".webm") || heroImage.includes("video") ? (
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            className="w-full h-full object-cover"
+          >
+            <source src={heroImage} type="video/mp4" />
+          </video>
+        ) : (
+          <OptimizedImage
+            src={heroImage}
+            alt={name}
+            preset="hero"
+            fill
+            objectFit="cover"
+            priority
+            sizes="100vw"
+          />
+        )}
         {/* Fallback gradient (visible while loading or if no image) */}
         <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] -z-10" />
 
-        {/* Model name watermark */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[15vw] font-bold text-white/[0.03] leading-none select-none">
-            {name.split(" ")[1] || name}
-          </span>
-        </div>
       </div>
 
       {/* Overlay gradients */}
@@ -68,16 +74,18 @@ export default function ModelHero({
           {/* Model name */}
           <motion.h1
             variants={fadeInUp}
-            className="text-[clamp(2rem,6vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
+            className="text-[clamp(1.5rem,5vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
           >
             {name}
           </motion.h1>
 
           {/* Price + CTAs */}
-          <motion.div variants={fadeInUp} className="flex flex-wrap items-center gap-4">
-            <span className="text-xl font-semibold text-white">{price}</span>
+          <motion.div variants={fadeInUp} className="flex items-center gap-4">
+            <span className="text-xl text-white">
+              <span className="font-light">Desde </span>
+              <span className="font-semibold">{price}</span>
+            </span>
             <a href="#contacto-modelo" className="btn-primary">
-              <Calendar className="w-4 h-4" />
               Agendar Test Drive
             </a>
             <a href="#especificaciones" className="btn-outline">

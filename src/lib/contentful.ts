@@ -131,11 +131,11 @@ export async function getVehicleModelBySlug(slug: string) {
     const rawKeyStats = Array.isArray(rawKeyStatsField) ? rawKeyStatsField : rawKeyStatsField ? [rawKeyStatsField] : [];
 
     // Highlights can be a string (comma/space separated) or array
-    const parseHighlights = (val: any): string[] => {
+    function parseHighlights(val: any): string[] {
       if (Array.isArray(val)) return val;
       if (typeof val === "string" && val.trim()) return val.split(/\s*,\s*|\s*\n\s*/);
       return [];
-    };
+    }
 
     return {
       name: f.name || "",
@@ -152,6 +152,7 @@ export async function getVehicleModelBySlug(slug: string) {
       price: f.price || "",
       fuelType: f.fuelType || "Nafta",
       highlighted: f.highlighted ?? true,
+      brochureUrl: mediaUrl(f.brochure),
 
       // Colors
       colors: Array.isArray(f.colors)
@@ -185,15 +186,15 @@ export async function getVehicleModelBySlug(slug: string) {
       interiorImages: mediaUrls(f.iMg2daSeccin) || mediaUrls(f.interiorImages),
       interiorHighlights: parseHighlights(f.highligh2daSeccin || f.interiorHighlights),
 
-      // Technology Features (referenced modelFeature entries)
-      technologyFeatures: resolveRefs(f.technologyFeatures).map((feat: any) => ({
+      // Technology Features (field may be techFeatures or technologyFeatures)
+      technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => ({
         icon: feat.icon || "Star",
         title: feat.title || "",
         description: feat.description || "",
       })),
 
-      // Safety Features
-      safetyFeatures: resolveRefs(f.safetyFeatures).map((feat: any) => ({
+      // Safety Features (field may be safetyFeatures or safeFeatures)
+      safetyFeatures: resolveRefs(f.safaetyFeatures || f.safetyFeatures || f.safeFeatures).map((feat: any) => ({
         icon: feat.icon || "Shield",
         title: feat.title || "",
         description: feat.description || "",

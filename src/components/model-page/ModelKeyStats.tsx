@@ -42,7 +42,7 @@ export default function ModelKeyStats({ stats, brand }: ModelKeyStatsProps) {
             >
               {/* Value + unit */}
               <div className="flex items-baseline gap-1.5 mb-2">
-                <span className="text-[2.5rem] md:text-[3.25rem] font-michroma font-bold text-white leading-none tracking-tight">
+                <span className="text-[clamp(1.5rem,5vw,3.25rem)] font-michroma font-bold text-white leading-none tracking-tight">
                   {stat.value}
                 </span>
                 <span className={cn("text-lg md:text-xl font-semibold", accentColor)}>

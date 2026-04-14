@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Fuel, Zap, Droplets } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import type { PowertrainOption } from "@/lib/models-data";
@@ -19,21 +18,6 @@ export default function ModelPowertrain({ options }: ModelPowertrainProps) {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
-  const typeIcon = (type: string) => {
-    switch (type) {
-      case "Eléctrico": return Zap;
-      case "Híbrido": return Droplets;
-      default: return Fuel;
-    }
-  };
-
-  const typeBadgeColor = (type: string) => {
-    switch (type) {
-      case "Eléctrico": return "bg-green-500/10 text-green-400 border-green-500/20";
-      case "Híbrido": return "bg-blue-500/10 text-blue-400 border-blue-500/20";
-      default: return "bg-orange-500/10 text-orange-400 border-orange-500/20";
-    }
-  };
 
   return (
     <section ref={ref} className="section-padding">
@@ -45,9 +29,6 @@ export default function ModelPowertrain({ options }: ModelPowertrainProps) {
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-14">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
-            Motorización
-          </p>
           <h2 className="text-section font-michroma font-bold text-white mb-4">
             Elegí tu <span className="gradient-text">potencia</span>
           </h2>
@@ -61,22 +42,15 @@ export default function ModelPowertrain({ options }: ModelPowertrainProps) {
           "grid gap-6 max-w-4xl mx-auto",
           options.length === 1 ? "grid-cols-1 max-w-lg" : "md:grid-cols-2"
         )}>
-          {options.map((option) => {
-            const Icon = typeIcon(option.type);
-            return (
+          {options.map((option) => (
               <motion.div
                 key={option.name}
                 variants={fadeInUp}
-                className="glass-strong p-8 hover:border-white/[0.15] transition-all duration-500"
+                className="glass-strong p-5 md:p-8 hover:border-white/[0.15] transition-all duration-300"
               >
-                {/* Type badge */}
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-xl font-bold text-white">{option.name}</h3>
-                  <span className={cn(
-                    "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border",
-                    typeBadgeColor(option.type)
-                  )}>
-                    <Icon className="w-3.5 h-3.5" />
+                  <span className="text-xs text-text-muted uppercase tracking-wider">
                     {option.type}
                   </span>
                 </div>
@@ -97,8 +71,7 @@ export default function ModelPowertrain({ options }: ModelPowertrainProps) {
                   <StatItem label="Transmisión" value={option.transmission} />
                 </div>
               </motion.div>
-            );
-          })}
+          ))}
         </div>
       </motion.div>
     </section>

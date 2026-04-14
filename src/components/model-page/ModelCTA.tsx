@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import { Calendar, MessageCircle, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { SITE_CONFIG } from "@/lib/data";
 
@@ -10,13 +10,14 @@ interface ModelCTAProps {
   modelName: string;
   price: string;
   brand: "OMODA" | "JAECOO";
+  brochureUrl?: string;
 }
 
 /**
  * Bottom CTA section — drives to test drive booking or WhatsApp chat.
  * Full-width ambient glow, strong visual hierarchy.
  */
-export default function ModelCTA({ modelName, price, brand }: ModelCTAProps) {
+export default function ModelCTA({ modelName, price, brand, brochureUrl }: ModelCTAProps) {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -63,18 +64,19 @@ export default function ModelCTA({ modelName, price, brand }: ModelCTAProps) {
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
           <a href="/#contacto" className="btn-primary text-base">
-            <Calendar className="w-5 h-5" />
             Agendar Test Drive
           </a>
-          <a
-            href={`${SITE_CONFIG.whatsapp}?text=Hola! Me interesa el ${modelName}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-outline text-base"
-          >
-            <MessageCircle className="w-5 h-5" />
-            Chatear por WhatsApp
-          </a>
+          {brochureUrl && (
+            <a
+              href={brochureUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              download
+              className="btn-outline text-base"
+            >
+              Descargar Brochure
+            </a>
+          )}
         </motion.div>
 
         {/* Back to models */}

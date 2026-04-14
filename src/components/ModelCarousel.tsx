@@ -161,7 +161,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
                 className="relative w-full h-full"
               >
                 <OptimizedImage
-                  src={active.sideImage.fields.file.url}
+                  src={active.sideImage?.fields?.file?.url || ""}
                   alt={active.name}
                   preset="carouselCar"
                   fill

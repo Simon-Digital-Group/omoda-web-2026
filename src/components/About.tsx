@@ -78,7 +78,7 @@ export default function About() {
                 key={stat.label}
                 className="glass p-6 text-center group hover:bg-white/[0.06] transition-all duration-500"
               >
-                <p className="text-3xl md:text-4xl font-michroma font-bold text-white mb-1">
+                <p className="text-2xl md:text-4xl font-michroma font-bold text-white mb-1">
                   <AnimatedNumber value={stat.value} suffix={stat.suffix} />
                 </p>
                 <p className="text-xs text-text-muted uppercase tracking-wider">

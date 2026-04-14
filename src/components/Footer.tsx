@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Instagram, Facebook, ArrowUpRight } from "lucide-react";
 import { NAV_LINKS, SITE_CONFIG, VEHICLE_MODELS } from "@/lib/data";
 
 export default function Footer() {
@@ -23,26 +22,22 @@ export default function Footer() {
               La nueva generación de SUVs premium en Uruguay. Diseño, tecnología
               y rendimiento excepcional.
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-4">
               <a
                 href={SITE_CONFIG.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]
-                           hover:bg-white/[0.08] hover:border-white/[0.12] transition-all duration-300"
-                aria-label="Instagram"
+                className="text-sm text-text-secondary hover:text-white transition-colors duration-300"
               >
-                <Instagram className="w-4 h-4 text-text-secondary" />
+                Instagram
               </a>
               <a
                 href={SITE_CONFIG.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 rounded-xl bg-white/[0.03] border border-white/[0.06]
-                           hover:bg-white/[0.08] hover:border-white/[0.12] transition-all duration-300"
-                aria-label="Facebook"
+                className="text-sm text-text-secondary hover:text-white transition-colors duration-300"
               >
-                <Facebook className="w-4 h-4 text-text-secondary" />
+                Facebook
               </a>
             </div>
           </div>

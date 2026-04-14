@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
 
@@ -81,7 +81,6 @@ export default function Hero({
           <motion.div variants={fadeInUp} className="flex flex-wrap gap-4">
             <a href={ctaLink} className="btn-primary text-base">
               {ctaText}
-              <ArrowRight className="w-5 h-5" />
             </a>
             <a href="#contacto" className="btn-secondary text-base">
               Solicitar Cotización

@@ -2,7 +2,6 @@
 
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
-import * as LucideIcons from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import type { ModelFeature } from "@/lib/models-data";
 
@@ -39,9 +38,6 @@ export default function ModelFeatureGrid({
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-14">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
-            {sectionLabel}
-          </p>
           <h2 className="text-section font-michroma font-bold text-white">
             {heading}{" "}
             <span className="gradient-text">{headingAccent}</span>
@@ -50,27 +46,12 @@ export default function ModelFeatureGrid({
 
         {/* Feature cards */}
         <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
-          {features.map((feature, i) => {
-            // Dynamically resolve icon from lucide-react
-            const IconComponent =
-              (LucideIcons as unknown as Record<string, React.ComponentType<{ className?: string }>>)[
-                feature.icon
-              ] || LucideIcons.Star;
-
-            return (
+          {features.map((feature, i) => (
               <motion.div
                 key={feature.title}
                 variants={fadeInUp}
-                className="glass group p-8 hover:bg-white/[0.06] transition-all duration-500
-                           hover:border-white/[0.12]"
+                className="glass group p-5 md:p-8 hover:border-white/[0.12] transition-all duration-300"
               >
-                <div
-                  className="w-12 h-12 rounded-xl bg-accent/[0.08] border border-accent/[0.15]
-                             flex items-center justify-center mb-5
-                             group-hover:bg-accent/[0.15] transition-colors duration-300"
-                >
-                  <IconComponent className="w-5 h-5 text-accent" />
-                </div>
                 <h3 className="text-lg font-semibold text-white mb-2">
                   {feature.title}
                 </h3>
@@ -78,8 +59,7 @@ export default function ModelFeatureGrid({
                   {feature.description}
                 </p>
               </motion.div>
-            );
-          })}
+          ))}
         </div>
       </motion.div>
     </section>

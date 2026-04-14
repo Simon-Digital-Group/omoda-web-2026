@@ -76,7 +76,7 @@ export default function Features() {
             <motion.div
               key={feature.title}
               variants={fadeInUp}
-              className="group p-8 bg-surface border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300"
+              className="group p-5 md:p-8 bg-surface border border-white/[0.06] hover:border-white/[0.12] transition-all duration-300"
             >
               <h3 className="text-lg font-semibold text-white mb-2">
                 {feature.title}

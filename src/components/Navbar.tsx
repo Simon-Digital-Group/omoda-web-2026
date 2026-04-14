@@ -11,7 +11,7 @@ const OMODA_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "OMODA");
 const JAECOO_MODELS = VEHICLE_MODELS.filter((m) => m.brand === "JAECOO");
 
 const LINK_CLASS =
-  "relative px-4 py-2 text-sm text-white hover:text-accent transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
+  "relative px-4 py-2 text-sm text-text-secondary hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -82,7 +82,7 @@ export default function Navbar() {
                     "flex items-center gap-1.5 px-4 py-2 text-sm transition-colors duration-300 rounded-full",
                     modelsOpen
                       ? "text-white bg-white/[0.05]"
-                      : "text-white hover:text-accent hover:bg-white/[0.05]"
+                      : "text-text-secondary hover:text-white hover:bg-white/[0.05]"
                   )}
                 >
                   Modelos
@@ -118,8 +118,12 @@ export default function Navbar() {
                                        hover:bg-white/[0.06] transition-colors duration-200 group"
                           >
                             <div>
-                              <p className="text-sm font-medium text-white">{model.name}</p>
-                              <p className="text-xs text-text-muted">{model.tagline}</p>
+                              <p className="text-sm font-medium text-white">
+                                {model.name}
+                                {model.fuelType === "Eléctrico" && (
+                                  <span className="ml-2 text-[10px] font-semibold tracking-wider text-accent">EV</span>
+                                )}
+                              </p>
                             </div>
                             <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                           </Link>
@@ -141,8 +145,12 @@ export default function Navbar() {
                                        hover:bg-white/[0.06] transition-colors duration-200 group"
                           >
                             <div>
-                              <p className="text-sm font-medium text-white">{model.name}</p>
-                              <p className="text-xs text-text-muted">{model.tagline}</p>
+                              <p className="text-sm font-medium text-white">
+                                {model.name}
+                                {model.fuelType === "Eléctrico" && (
+                                  <span className="ml-2 text-[10px] font-semibold tracking-wider text-accent">EV</span>
+                                )}
+                              </p>
                             </div>
                             <ChevronDown className="w-3.5 h-3.5 -rotate-90 text-accent opacity-0 group-hover:opacity-100 transition-opacity" />
                           </Link>
@@ -169,8 +177,8 @@ export default function Navbar() {
           <div className="flex items-center gap-3">
             <Link
               href="/#contacto"
-              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-white
-                         hover:text-accent transition-colors duration-300 rounded-full hover:bg-white/[0.05]"
+              className="hidden lg:inline-flex items-center px-4 py-2 text-sm text-text-secondary
+                         hover:text-white transition-colors duration-300 rounded-full hover:bg-white/[0.05]"
             >
               Contacto
             </Link>
@@ -256,6 +264,9 @@ export default function Navbar() {
                             className="text-lg text-text-secondary hover:text-accent transition-colors py-1"
                           >
                             {model.name}
+                            {model.fuelType === "Eléctrico" && (
+                              <span className="ml-2 text-xs font-semibold text-accent">EV</span>
+                            )}
                           </Link>
                         ))}
                         <div className="border-t border-white/[0.08] w-16 my-2" />
@@ -268,6 +279,9 @@ export default function Navbar() {
                             className="text-lg text-text-secondary hover:text-accent transition-colors py-1"
                           >
                             {model.name}
+                            {model.fuelType === "Eléctrico" && (
+                              <span className="ml-2 text-xs font-semibold text-accent">EV</span>
+                            )}
                           </Link>
                         ))}
                       </div>

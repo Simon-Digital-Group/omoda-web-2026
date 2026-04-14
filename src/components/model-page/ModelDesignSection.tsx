@@ -127,7 +127,7 @@ export default function ModelDesignSection({
         {/* Text content */}
         <div
           className={cn(
-            "flex items-center px-8 py-16 md:px-16 lg:py-24 bg-background",
+            "flex items-center px-5 py-12 md:px-16 lg:py-24 bg-background",
             reverse ? "lg:order-1" : "lg:order-2"
           )}
         >

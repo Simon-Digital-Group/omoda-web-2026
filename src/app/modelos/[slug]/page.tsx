@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { MODEL_PAGES, ALL_MODEL_SLUGS, type PowertrainOption } from "@/lib/models-data";
+import { MODEL_PAGES, ALL_MODEL_SLUGS } from "@/lib/models-data";
 import { getVehicleModelBySlug } from "@/lib/contentful";
 
 import Navbar from "@/components/Navbar";
@@ -114,13 +114,9 @@ export default async function ModelPage({ params }: PageProps) {
       <ModelFeatureGrid
         id="seguridad"
         sectionLabel="Seguridad"
-        heading="Protección que"
-        headingAccent="inspira confianza"
+        heading="Seguridad de"
+        headingAccent="vanguardia"
         features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
-      />
-
-      <ModelPowertrain
-        options={pick<PowertrainOption[]>(cms?.powertrainOptions as PowertrainOption[] | undefined, s?.powertrainOptions || [])}
       />
 
       <ModelSpecs
@@ -132,6 +128,7 @@ export default async function ModelPage({ params }: PageProps) {
         modelName={name}
         price={pick(cms?.price, s?.price || "")}
         brand={brand}
+        brochureUrl={cms?.brochureUrl}
       />
 
       <Footer />

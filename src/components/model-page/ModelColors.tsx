@@ -37,9 +37,6 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-12">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
-            Colores disponibles
-          </p>
           <h2 className="text-section font-michroma font-bold text-white">
             Elegí tu color
           </h2>
@@ -112,10 +109,10 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
           </div>
         </motion.div>
 
-        {/* Color swatches + names — wraps into rows on smaller viewports */}
+        {/* Color swatches row */}
         <motion.div
           variants={fadeInUp}
-          className="flex flex-wrap justify-center items-start gap-x-4 gap-y-6 md:gap-x-5 max-w-3xl mx-auto"
+          className="flex justify-center items-center gap-3 md:gap-4"
         >
           {colors.map((color, i) => (
             <button
@@ -123,42 +120,42 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
               onClick={() => setSelected(i)}
               title={color.name}
               aria-label={color.name}
-              className="flex flex-col items-center gap-2 group w-[68px] md:w-[80px]"
+              className={cn(
+                "relative rounded-full transition-all duration-300 flex-shrink-0",
+                i === selected
+                  ? cn(
+                      "w-12 h-12 ring-2 ring-offset-2 ring-offset-background",
+                      isOmoda ? "ring-accent" : "ring-accent-alt"
+                    )
+                  : "w-9 h-9 hover:scale-110 opacity-70 hover:opacity-100"
+              )}
+              style={
+                color.hex.includes(",")
+                  ? { background: `linear-gradient(135deg, ${color.hex.split(",")[0].trim()} 50%, ${color.hex.split(",")[1].trim()} 50%)` }
+                  : { backgroundColor: color.hex.trim() }
+              }
             >
-              <span
-                className={cn(
-                  "relative rounded-full transition-all duration-300",
-                  i === selected
-                    ? cn(
-                        "w-12 h-12 ring-2 ring-offset-2 ring-offset-background",
-                        isOmoda ? "ring-accent" : "ring-accent-alt"
-                      )
-                    : "w-9 h-9 group-hover:scale-110 opacity-70 group-hover:opacity-100"
-                )}
-                style={{ backgroundColor: color.hex }}
-              >
-                {/* Inner border for very light/white colors */}
-                <span className="absolute inset-0 rounded-full border border-white/15" />
-                {/* Selected indicator */}
-                {i === selected && (
-                  <span
-                    className={cn(
-                      "absolute inset-0 rounded-full border-2",
-                      isOmoda ? "border-accent/40" : "border-accent-alt/40"
-                    )}
-                  />
-                )}
-              </span>
-              <span
-                className={cn(
-                  "text-[11px] md:text-xs transition-colors duration-300 text-center leading-tight",
-                  i === selected ? "text-white" : "text-text-muted"
-                )}
-              >
-                {color.name}
-              </span>
+              {/* Inner border for very light/white colors */}
+              <span className="absolute inset-0 rounded-full border border-white/15" />
+              {/* Selected indicator */}
+              {i === selected && (
+                <span className={cn(
+                  "absolute inset-0 rounded-full border-2",
+                  isOmoda ? "border-accent/40" : "border-accent-alt/40"
+                )} />
+              )}
             </button>
           ))}
+        </motion.div>
+
+        {/* Selected color name */}
+        <motion.div
+          variants={fadeInUp}
+          className="text-center mt-4"
+        >
+          <p className="text-xs text-white tracking-wider uppercase">
+            {colors[selected]?.name}
+          </p>
         </motion.div>
       </motion.div>
     </section>

@@ -29,12 +29,8 @@ export default function ModelSpecs({ specs, modelName }: ModelSpecsProps) {
       >
         {/* Header */}
         <motion.div variants={fadeInUp} className="text-center mb-14">
-          <p className="text-xs uppercase tracking-[0.2em] text-text-muted mb-4">
-            Ficha Técnica
-          </p>
           <h2 className="text-section font-michroma font-bold text-white">
-            Especificaciones del{" "}
-            <span className="gradient-text">{modelName}</span>
+            Especificaciones
           </h2>
         </motion.div>
 
