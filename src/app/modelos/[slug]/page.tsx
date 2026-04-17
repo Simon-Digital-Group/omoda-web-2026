@@ -75,6 +75,7 @@ export default async function ModelPage({ params }: PageProps) {
         tagline={pick(cms?.tagline, s?.tagline || "")}
         description={pick(cms?.description, s?.heroDescription || "")}
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
+        heroIsVideo={cms?.heroIsVideo}
         price={pick(cms?.price, s?.price || "")}
       />
 

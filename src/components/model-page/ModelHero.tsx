@@ -11,6 +11,7 @@ interface ModelHeroProps {
   tagline: string;
   description: string;
   heroImage: string;
+  heroIsVideo?: boolean;
   price: string;
 }
 
@@ -25,6 +26,7 @@ export default function ModelHero({
   tagline,
   description,
   heroImage,
+  heroIsVideo,
   price,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
@@ -33,7 +35,7 @@ export default function ModelHero({
     <section className="relative min-h-screen flex items-end pb-20 md:pb-28 overflow-hidden">
       {/* Background image — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        {heroImage.endsWith(".mp4") || heroImage.endsWith(".webm") || heroImage.includes("video") ? (
+        {heroIsVideo || heroImage.endsWith(".mp4") || heroImage.endsWith(".webm") ? (
           <video
             autoPlay
             muted

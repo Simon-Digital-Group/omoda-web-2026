@@ -25,28 +25,35 @@ function mediaUrl(field: any): string {
   return url.startsWith("//") ? `https:${url}` : url;
 }
 
+function isVideo(field: any): boolean {
+  const ct = field?.fields?.file?.contentType || "";
+  return ct.startsWith("video/");
+}
+
 /**
- * Fetch hero banner content
+ * Fetch all hero banners (for rotating carousel on homepage)
  */
-export async function getHeroBanner() {
+export async function getHeroBanners() {
   try {
     const entries = await client.getEntries({
       content_type: "heroBanner",
-      limit: 1,
       include: 2,
     });
-    if (!entries.items.length) return null;
+    if (!entries.items.length) return [];
 
-    const f = entries.items[0].fields as any;
-    return {
-      title: f.title || "",
-      subtitle: f.subtitle || "",
-      ctaText: f.ctaText || "Explorar Modelos",
-      ctaLink: f.ctaLink || "#modelos",
-      backgroundUrl: mediaUrl(f.backgroundMedia),
-    };
+    return entries.items.map((item) => {
+      const f = item.fields as any;
+      return {
+        title: f.title || "",
+        subtitle: f.subtitle || "",
+        ctaText: f.ctaText || "Explorar Modelos",
+        ctaLink: f.ctaLink || "#modelos",
+        backgroundUrl: mediaUrl(f.backgroundMedia),
+        backgroundIsVideo: isVideo(f.backgroundMedia),
+      };
+    });
   } catch {
-    return null;
+    return [];
   }
 }
 
@@ -145,6 +152,7 @@ export async function getVehicleModelBySlug(slug: string) {
       description: f.description || "",
       sideImage: f.sideImage || null,
       heroImage: mediaUrl(f.heroImage),
+      heroIsVideo: isVideo(f.heroImage),
       lengthMm: f.lengthMm || 0,
       widthMm: f.widthMm || 0,
       heightMm: f.heightMm || 0,

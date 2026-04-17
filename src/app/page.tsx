@@ -5,28 +5,18 @@ import Features from "@/components/Features";
 import About from "@/components/About";
 import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
-import { getHeroBanner, getVehicleModels } from "@/lib/contentful";
+import { getHeroBanners, getVehicleModels } from "@/lib/contentful";
 
 export const revalidate = 60; // revalidate every 60 seconds
 
 export default async function Home() {
-  const hero = await getHeroBanner();
+  const banners = await getHeroBanners();
   const cmsModels = await getVehicleModels();
 
   return (
     <main id="main-content" className="min-h-screen">
       <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
-      <Hero
-        {...(hero
-          ? {
-              title: hero.title,
-              subtitle: hero.subtitle,
-              ctaText: hero.ctaText,
-              ctaLink: hero.ctaLink,
-              backgroundUrl: hero.backgroundUrl,
-            }
-          : {})}
-      />
+      <Hero banners={banners.length > 0 ? banners : undefined} />
       <ModelCarousel cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
       <Features />
       <About />
