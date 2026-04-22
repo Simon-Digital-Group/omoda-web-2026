@@ -132,4 +132,41 @@
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+
+  /* CSS-based scroll-reveal. No JS, no Framer Motion.
+     Uses animation-timeline (Chrome/Edge) with graceful fallback. */
+  @keyframes reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  .reveal-on-scroll {
+    opacity: 0;
+    animation: reveal-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    animation-timeline: view();
+    animation-range: entry 0% cover 25%;
+  }
+
+  /* Fallback for browsers without scroll-driven animations:
+     run the animation with a slight delay so content appears. */
+  @supports not (animation-timeline: view()) {
+    .reveal-on-scroll {
+      animation-timeline: auto;
+      animation-delay: 0ms;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reveal-on-scroll {
+      opacity: 1 !important;
+      animation: none !important;
+      transform: none !important;
+    }
+  }
 }

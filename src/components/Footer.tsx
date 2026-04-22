@@ -1,6 +1,4 @@
-"use client";
-
-import { motion } from "framer-motion";
+import Image from "next/image";
 import { NAV_LINKS, SITE_CONFIG, VEHICLE_MODELS } from "@/lib/data";
 
 export default function Footer() {
@@ -13,9 +11,11 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div>
-            <img
+            <Image
               src="/images/omoda-jaecoo-logo.svg"
               alt="OMODA | JAECOO Uruguay"
+              width={120}
+              height={20}
               className="h-5 w-auto mb-5"
             />
             <p className="text-sm text-text-secondary leading-relaxed mb-6">

@@ -1,4 +1,5 @@
 import { createClient, Entry } from "contentful";
+import { cache } from "react";
 
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || "",
@@ -33,7 +34,7 @@ function isVideo(field: any): boolean {
 /**
  * Fetch all hero banners (for rotating carousel on homepage)
  */
-export async function getHeroBanners() {
+export const getHeroBanners = cache(async function getHeroBanners() {
   try {
     const entries = await client.getEntries({
       content_type: "heroBanner",
@@ -55,12 +56,12 @@ export async function getHeroBanners() {
   } catch {
     return [];
   }
-}
+});
 
 /**
  * Fetch all vehicle models (for carousel on homepage)
  */
-export async function getVehicleModels() {
+export const getVehicleModels = cache(async function getVehicleModels() {
   try {
     const entries = await client.getEntries({
       content_type: "vehicleModel",
@@ -97,7 +98,7 @@ export async function getVehicleModels() {
   } catch {
     return [];
   }
-}
+});
 
 /**
  * Helper: extract referenced entries into a simple array of their fields
@@ -120,7 +121,7 @@ function mediaUrls(mediaArray: any[] | undefined): string[] {
 /**
  * Fetch a single vehicle model by slug — full page data
  */
-export async function getVehicleModelBySlug(slug: string) {
+export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(slug: string) {
   try {
     const entries = await client.getEntries({
       content_type: "vehicleModel",
@@ -229,14 +230,14 @@ export async function getVehicleModelBySlug(slug: string) {
   } catch {
     return null;
   }
-}
+});
 
 /**
  * Fetch network locations (concesionarios or talleres) from Contentful.
  * Single content type `networkLocation` with a `type` field = "concesionario" | "taller".
  * Returns [] when there's no data or on error — never invents entries.
  */
-export async function getNetworkLocations(
+export const getNetworkLocations = cache(async function getNetworkLocations(
   type: "concesionario" | "taller"
 ) {
   try {
@@ -267,12 +268,12 @@ export async function getNetworkLocations(
   } catch {
     return [];
   }
-}
+});
 
 /**
  * Fetch site settings
  */
-export async function getSiteSettings() {
+export const getSiteSettings = cache(async function getSiteSettings() {
   try {
     const entries = await client.getEntries({
       content_type: "siteSettings",
@@ -295,4 +296,4 @@ export async function getSiteSettings() {
   } catch {
     return null;
   }
-}
+});

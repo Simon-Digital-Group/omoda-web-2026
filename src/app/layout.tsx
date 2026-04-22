@@ -1,10 +1,17 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Raleway, Michroma } from "next/font/google";
 import localFont from "next/font/local";
-import CookieBanner from "@/components/CookieBanner";
-import WhatsAppFloat from "@/components/WhatsAppFloat";
+import dynamic from "next/dynamic";
 import ReducedMotionProvider from "@/components/ReducedMotionProvider";
 import "./globals.css";
+
+// Defer below-the-fold chrome; keeps framer-motion out of the critical path
+const CookieBanner = dynamic(() => import("@/components/CookieBanner"), {
+  ssr: false,
+});
+const WhatsAppFloat = dynamic(() => import("@/components/WhatsAppFloat"), {
+  ssr: false,
+});
 
 const inter = Inter({
   subsets: ["latin"],
