@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
 import { getNetworkLocations } from "@/lib/contentful";
 import { SITE_CONFIG } from "@/lib/data";
+import { networkLocationsSchema, breadcrumbSchema, safeJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Concesionarios",
@@ -101,6 +102,32 @@ export default async function ConcesionariosPage() {
       </section>
 
       <Footer />
+
+      {concesionarios.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd(
+              networkLocationsSchema(
+                concesionarios,
+                "AutoDealer",
+                "https://omodajaecoo.com.uy/concesionarios"
+              )
+            ),
+          }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            breadcrumbSchema([
+              { name: "Inicio", url: "https://omodajaecoo.com.uy" },
+              { name: "Concesionarios" },
+            ])
+          ),
+        }}
+      />
     </main>
   );
 }

@@ -3,6 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
 import { getNetworkLocations } from "@/lib/contentful";
+import { networkLocationsSchema, breadcrumbSchema, safeJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Talleres Autorizados",
@@ -66,6 +67,32 @@ export default async function TalleresPage() {
       </section>
 
       <Footer />
+
+      {talleres.length > 0 && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: safeJsonLd(
+              networkLocationsSchema(
+                talleres,
+                "AutoRepair",
+                "https://omodajaecoo.com.uy/talleres"
+              )
+            ),
+          }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: safeJsonLd(
+            breadcrumbSchema([
+              { name: "Inicio", url: "https://omodajaecoo.com.uy" },
+              { name: "Talleres Autorizados" },
+            ])
+          ),
+        }}
+      />
     </main>
   );
 }

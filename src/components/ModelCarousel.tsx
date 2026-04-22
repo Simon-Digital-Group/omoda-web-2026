@@ -177,7 +177,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
               >
                 <OptimizedImage
                   src={active.sideImage?.fields?.file?.url || ""}
-                  alt={`${active.name} SUV vista lateral`}
+                  alt={`${active.brand} ${active.name} — ${active.tagline || "SUV premium"}, vista lateral`}
                   preset="carouselCar"
                   fill
                   objectFit="cover"

@@ -70,7 +70,7 @@ export default function ModelDesignSection({
             >
               <OptimizedImage
                 src={images[currentImage]}
-                alt={`${heading} — ${currentImage + 1}`}
+                alt={`${heading} — imagen ${currentImage + 1} de ${images.length}`}
                 preset="designSection"
                 fill
                 objectFit="cover"
