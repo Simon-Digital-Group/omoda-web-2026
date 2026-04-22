@@ -138,11 +138,11 @@ export async function getVehicleModelBySlug(slug: string) {
     const rawKeyStats = Array.isArray(rawKeyStatsField) ? rawKeyStatsField : rawKeyStatsField ? [rawKeyStatsField] : [];
 
     // Highlights can be a string (comma/space separated) or array
-    function parseHighlights(val: any): string[] {
+    const parseHighlights = (val: any): string[] => {
       if (Array.isArray(val)) return val;
       if (typeof val === "string" && val.trim()) return val.split(/\s*,\s*|\s*\n\s*/);
       return [];
-    }
+    };
 
     return {
       name: f.name || "",
