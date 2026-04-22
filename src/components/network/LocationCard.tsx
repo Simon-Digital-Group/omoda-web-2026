@@ -37,14 +37,27 @@ export default function LocationCard({
         </div>
 
         {location.phone && (
-          <div className="flex items-center gap-2.5">
-            <Phone className="w-3.5 h-3.5 flex-shrink-0 text-text-muted" />
-            <a
-              href={`tel:${location.phone.replace(/\s/g, "")}`}
-              className="hover:text-white transition-colors"
-            >
-              {location.phone}
-            </a>
+          <div className="flex items-start gap-2.5">
+            <Phone className="w-3.5 h-3.5 mt-0.5 flex-shrink-0 text-text-muted" />
+            <span className="flex flex-wrap items-center gap-x-1 gap-y-0.5">
+              {location.phone
+                .split(/\s*[,/|]\s*/)
+                .map((n) => n.trim())
+                .filter(Boolean)
+                .map((num, idx, arr) => (
+                  <span key={`${num}-${idx}`} className="inline-flex items-center">
+                    <a
+                      href={`tel:${num.replace(/\s/g, "")}`}
+                      className="hover:text-white transition-colors"
+                    >
+                      {num}
+                    </a>
+                    {idx < arr.length - 1 && (
+                      <span className="text-text-muted mx-1">·</span>
+                    )}
+                  </span>
+                ))}
+            </span>
           </div>
         )}
 

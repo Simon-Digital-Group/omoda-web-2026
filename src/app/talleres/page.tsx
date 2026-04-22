@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import { MessageCircle } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
-import { TALLERES, TALLER_DEPARTMENTS } from "@/lib/network-data";
-import { SITE_CONFIG } from "@/lib/data";
+import { getNetworkLocations } from "@/lib/contentful";
 
 export const metadata: Metadata = {
   title: "Talleres Autorizados | OMODA JAECOO Uruguay",
@@ -12,7 +10,14 @@ export const metadata: Metadata = {
     "Encontrá los talleres de servicio autorizados OMODA y JAECOO en todo Uruguay. Atención profesional y repuestos originales.",
 };
 
-export default function TalleresPage() {
+export const revalidate = 60;
+
+export default async function TalleresPage() {
+  const talleres = await getNetworkLocations("taller");
+  const departments = Array.from(
+    new Set(talleres.map((t) => t.department))
+  ).sort();
+
   return (
     <main id="main-content" className="min-h-screen">
       <Navbar />
@@ -28,49 +33,33 @@ export default function TalleresPage() {
             Autorizados
           </h1>
           <p className="text-text-secondary text-lg max-w-xl leading-relaxed mb-8">
-            {TALLERES.length} talleres en todo el país. Técnicos certificados,
-            diagnóstico oficial y repuestos originales OMODA y JAECOO.
+            {talleres.length > 0
+              ? `${talleres.length} talleres en todo el país. Técnicos certificados, diagnóstico oficial y repuestos originales OMODA y JAECOO.`
+              : "Red de talleres autorizados OMODA y JAECOO en todo Uruguay."}
           </p>
 
-          {/* Schedule CTA */}
-          <div className="flex flex-wrap gap-3">
-            <a
-              href={`${SITE_CONFIG.whatsapp}?text=Hola! Quisiera agendar un service`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-primary"
-            >
-              <MessageCircle className="w-4 h-4" />
-              Agendar service por WhatsApp
-            </a>
-          </div>
-
-          {/* Quick stats */}
-          <div className="flex flex-wrap gap-8 mt-12 pt-8 border-t border-white/[0.06]">
-            <div>
-              <p className="text-2xl font-bold text-white">{TALLERES.length}</p>
-              <p className="text-xs text-text-muted uppercase tracking-widest mt-0.5">Talleres</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">{TALLER_DEPARTMENTS.length}</p>
-              <p className="text-xs text-text-muted uppercase tracking-widest mt-0.5">Departamentos</p>
-            </div>
-            <div>
-              <p className="text-2xl font-bold text-white">Lun–Vie</p>
-              <p className="text-xs text-text-muted uppercase tracking-widest mt-0.5">9:00 – 18:30</p>
-            </div>
-          </div>
         </div>
       </section>
 
       {/* Grid */}
       <section className="pb-28 md:pb-40">
         <div className="container-custom">
-          <NetworkGrid
-            locations={TALLERES}
-            departments={TALLER_DEPARTMENTS}
-            accentClass="text-accent"
-          />
+          {talleres.length > 0 ? (
+            <NetworkGrid
+              locations={talleres}
+              departments={departments}
+              accentClass="text-accent"
+            />
+          ) : (
+            <div className="text-center py-20 border border-white/[0.06] rounded-2xl bg-white/[0.02]">
+              <p className="text-text-secondary text-lg">
+                No hay talleres disponibles en este momento.
+              </p>
+              <p className="text-text-muted text-sm mt-2">
+                Contactanos por WhatsApp para agendar un service.
+              </p>
+            </div>
+          )}
         </div>
       </section>
 

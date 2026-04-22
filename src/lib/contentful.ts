@@ -232,6 +232,44 @@ export async function getVehicleModelBySlug(slug: string) {
 }
 
 /**
+ * Fetch network locations (concesionarios or talleres) from Contentful.
+ * Single content type `networkLocation` with a `type` field = "concesionario" | "taller".
+ * Returns [] when there's no data or on error — never invents entries.
+ */
+export async function getNetworkLocations(
+  type: "concesionario" | "taller"
+) {
+  try {
+    const entries = await client.getEntries({
+      content_type: "networdLocation",
+      order: ["fields.department", "fields.name"],
+      limit: 200,
+    });
+
+    return entries.items
+      .filter((item) => {
+        const t = ((item.fields as any).type || "").toString().trim().toLowerCase();
+        return t === type;
+      })
+      .map((item) => {
+        const f = item.fields as any;
+        return {
+          name: f.name || "",
+          department: f.department || "",
+          city: f.city || undefined,
+          address: f.address || "",
+          phone: f.phone || "",
+          email: f.email || "",
+          contact: f.contact || undefined,
+          hours: f.hours || undefined,
+        };
+      });
+  } catch {
+    return [];
+  }
+}
+
+/**
  * Fetch site settings
  */
 export async function getSiteSettings() {
