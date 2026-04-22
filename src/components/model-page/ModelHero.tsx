@@ -95,17 +95,17 @@ export default function ModelHero({
             </a>
           </motion.div>
         </div>
+      </motion.div>
 
-        {/* Scroll hint */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.5 }}
-          className="absolute bottom-0 left-1/2 -translate-x-1/2"
-        >
-          <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-            <ArrowDown className="w-5 h-5 text-text-muted" />
-          </motion.div>
+      {/* Scroll hint */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10"
+      >
+        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+          <ArrowDown className="w-5 h-5 text-text-muted" />
         </motion.div>
       </motion.div>
     </section>
