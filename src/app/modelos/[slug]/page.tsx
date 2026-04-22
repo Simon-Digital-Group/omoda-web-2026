@@ -196,7 +196,7 @@ export default async function ModelPage({ params }: PageProps) {
           url,
           image: imageUrl || undefined,
           bodyType: "SUV",
-          fuelType: pick(cms?.fuelType, s?.fuelType || "Nafta"),
+          fuelType: cms?.fuelType || "Nafta",
           vehicleModelDate: new Date().getFullYear().toString(),
           offers: priceParsed
             ? {
