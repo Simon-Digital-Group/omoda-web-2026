@@ -32,15 +32,17 @@ export default function ModelHero({
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
 
   return (
-    <section className="relative min-h-screen flex items-end pb-20 md:pb-28 overflow-hidden">
+    <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
       {/* Background image — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        {heroIsVideo || heroImage.endsWith(".mp4") || heroImage.endsWith(".webm") ? (
+        {heroIsVideo ? (
           <video
             autoPlay
             muted
             loop
             playsInline
+            preload="metadata"
+            aria-label={`${brand} ${name}`}
             className="w-full h-full object-cover"
           >
             <source src={heroImage} type="video/mp4" />
@@ -48,7 +50,7 @@ export default function ModelHero({
         ) : (
           <OptimizedImage
             src={heroImage}
-            alt={name}
+            alt={`${brand} ${name} — ${tagline}`}
             preset="hero"
             fill
             objectFit="cover"
@@ -76,7 +78,7 @@ export default function ModelHero({
           {/* Model name */}
           <motion.h1
             variants={fadeInUp}
-            className="text-[clamp(1.25rem,8vw,5rem)] font-michroma font-bold text-white uppercase mb-3 whitespace-nowrap"
+            className="text-[clamp(1.75rem,8vw,5rem)] font-michroma font-bold text-white uppercase mb-3 break-words md:whitespace-nowrap"
           >
             {name}
           </motion.h1>
@@ -103,8 +105,12 @@ export default function ModelHero({
         animate={{ opacity: 1 }}
         transition={{ delay: 1.5 }}
         className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-10"
+        aria-hidden="true"
       >
-        <motion.div animate={{ y: [0, 8, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+        <motion.div
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
           <ArrowDown className="w-5 h-5 text-text-muted" />
         </motion.div>
       </motion.div>

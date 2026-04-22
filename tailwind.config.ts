@@ -14,8 +14,8 @@ const config: Config = {
         "surface-light": "#1A1A1A",
         border: "#222222",
         "text-primary": "#FFFFFF",
-        "text-secondary": "#999999",
-        "text-muted": "#888888",
+        "text-secondary": "#B0B0B0",
+        "text-muted": "#A0A0A0",
         // OMODA brand teal/turquoise
         accent: {
           DEFAULT: "#00C9B7",

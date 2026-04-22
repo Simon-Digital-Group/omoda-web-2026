@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -12,6 +12,8 @@ type FormStatus = "idle" | "submitting" | "success" | "error";
 export default function ContactForm() {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const mountedAt = useRef(Date.now());
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [status, setStatus] = useState<FormStatus>("idle");
   const [formData, setFormData] = useState({
@@ -20,7 +22,12 @@ export default function ContactForm() {
     phone: "",
     model: "",
     message: "",
+    website: "", // honeypot
   });
+
+  useEffect(() => {
+    mountedAt.current = Date.now();
+  }, []);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -31,36 +38,40 @@ export default function ContactForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("submitting");
+    setErrorMessage("");
 
     try {
-      // POST to Next.js API route
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          submittedAt: mountedAt.current,
+        }),
       });
 
       if (res.ok) {
         setStatus("success");
-        setFormData({ fullName: "", email: "", phone: "", model: "", message: "" });
+        setFormData({ fullName: "", email: "", phone: "", model: "", message: "", website: "" });
       } else {
+        const data = await res.json().catch(() => ({}));
+        setErrorMessage(data.error || "Ocurrió un error. Intentá nuevamente.");
         setStatus("error");
       }
     } catch {
+      setErrorMessage("No se pudo conectar con el servidor. Intentá nuevamente.");
       setStatus("error");
     }
   };
 
   return (
     <section ref={ref} id="contacto" className="section-padding relative border-t border-white/[0.06]">
-
       <motion.div
         variants={staggerContainer}
         initial="hidden"
         animate={isInView ? "visible" : "hidden"}
         className="relative container-custom"
       >
-        {/* Header — direct, no fluff */}
         <motion.div variants={fadeInUp} className="mb-16 max-w-xl">
           <h2 className="text-section font-michroma font-bold text-white mb-4">
             Test Drive
@@ -72,12 +83,24 @@ export default function ContactForm() {
         </motion.div>
 
         <div className="grid lg:grid-cols-5 gap-12">
-          {/* Form */}
           <motion.form
             variants={fadeInUp}
             onSubmit={handleSubmit}
             className="lg:col-span-3 glass p-5 sm:p-8 md:p-10"
+            noValidate
           >
+            {/* Honeypot — hidden from users, visible to bots */}
+            <input
+              type="text"
+              name="website"
+              tabIndex={-1}
+              autoComplete="off"
+              value={formData.website}
+              onChange={handleChange}
+              aria-hidden="true"
+              style={{ position: "absolute", left: "-9999px", width: "1px", height: "1px", opacity: 0 }}
+            />
+
             <div className="grid sm:grid-cols-2 gap-5 mb-5">
               <InputField
                 label="Nombre completo"
@@ -86,6 +109,7 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 placeholder="Juan Pérez"
+                autoComplete="name"
               />
               <InputField
                 label="Email"
@@ -95,6 +119,8 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 placeholder="juan@email.com"
+                autoComplete="email"
+                inputMode="email"
               />
               <InputField
                 label="Teléfono"
@@ -104,10 +130,12 @@ export default function ContactForm() {
                 onChange={handleChange}
                 required
                 placeholder="+598 99 123 456"
+                autoComplete="tel"
+                inputMode="tel"
               />
               <div>
                 <label htmlFor="model" className="block text-sm text-text-secondary mb-2">
-                  Modelo de interés
+                  Modelo de interés <span className="text-text-muted font-normal">(opcional)</span>
                 </label>
                 <select
                   id="model"
@@ -115,8 +143,8 @@ export default function ContactForm() {
                   value={formData.model}
                   onChange={handleChange}
                   className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                             text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
-                             transition-colors duration-300 appearance-none cursor-pointer"
+                             text-white text-base sm:text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
+                             transition-colors duration-300 appearance-none cursor-pointer min-h-[44px]"
                 >
                   <option value="" className="bg-surface">
                     Seleccionar modelo
@@ -132,7 +160,7 @@ export default function ContactForm() {
 
             <div className="mb-6">
               <label htmlFor="message" className="block text-sm text-text-secondary mb-2">
-                Mensaje (opcional)
+                Mensaje <span className="text-text-muted font-normal">(opcional)</span>
               </label>
               <textarea
                 id="message"
@@ -140,9 +168,10 @@ export default function ContactForm() {
                 value={formData.message}
                 onChange={handleChange}
                 rows={4}
+                maxLength={2000}
                 placeholder="¿Tenés alguna consulta específica?"
                 className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                           text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
+                           text-white text-base sm:text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
                            transition-colors duration-300 resize-none"
               />
             </div>
@@ -150,50 +179,55 @@ export default function ContactForm() {
             <button
               type="submit"
               disabled={status === "submitting"}
+              aria-busy={status === "submitting"}
               className={cn(
-                "btn-primary w-full justify-center text-base",
+                "btn-primary w-full justify-center text-base min-h-[48px]",
                 status === "submitting" && "opacity-70 cursor-not-allowed"
               )}
             >
               {status === "submitting" ? "Enviando..." : "Agendar Test Drive"}
             </button>
 
-            {/* Status messages */}
-            {status === "success" && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-accent text-sm mt-4"
-              >
-                <CheckCircle className="w-4 h-4" />
-                ¡Gracias! Nos pondremos en contacto pronto.
-              </motion.p>
-            )}
-            {status === "error" && (
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex items-center gap-2 text-red-400 text-sm mt-4"
-              >
-                <AlertCircle className="w-4 h-4" />
-                Ocurrió un error. Por favor intentá nuevamente.
-              </motion.p>
-            )}
+            {/* Live region for status */}
+            <div role="status" aria-live="polite" aria-atomic="true" className="mt-4">
+              {status === "success" && (
+                <p className="flex items-center gap-2 text-accent text-sm">
+                  <CheckCircle className="w-4 h-4" aria-hidden="true" />
+                  ¡Gracias! Nos pondremos en contacto pronto.
+                </p>
+              )}
+              {status === "error" && (
+                <p className="flex items-center gap-2 text-red-400 text-sm">
+                  <AlertCircle className="w-4 h-4" aria-hidden="true" />
+                  {errorMessage || "Ocurrió un error. Por favor intentá nuevamente."}
+                </p>
+              )}
+            </div>
           </motion.form>
 
-          {/* Contact info sidebar */}
-          <motion.div
-            variants={fadeInUp}
-            className="lg:col-span-2 flex flex-col gap-6"
-          >
+          <motion.div variants={fadeInUp} className="lg:col-span-2 flex flex-col gap-6">
             <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Teléfono</h3>
-              <p className="text-sm text-text-secondary">{SITE_CONFIG.phone}</p>
+              <p className="text-sm text-text-secondary">
+                <a
+                  href={`tel:${SITE_CONFIG.phone.replace(/\s/g, "")}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {SITE_CONFIG.phone}
+                </a>
+              </p>
             </div>
 
             <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Email</h3>
-              <p className="text-sm text-text-secondary">{SITE_CONFIG.email}</p>
+              <p className="text-sm text-text-secondary">
+                <a
+                  href={`mailto:${SITE_CONFIG.email}`}
+                  className="hover:text-white transition-colors break-all"
+                >
+                  {SITE_CONFIG.email}
+                </a>
+              </p>
             </div>
           </motion.div>
         </div>
@@ -202,7 +236,6 @@ export default function ContactForm() {
   );
 }
 
-/** Reusable input field */
 function InputField({
   label,
   name,
@@ -211,6 +244,8 @@ function InputField({
   onChange,
   required = false,
   placeholder,
+  autoComplete,
+  inputMode,
 }: {
   label: string;
   name: string;
@@ -219,10 +254,16 @@ function InputField({
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   required?: boolean;
   placeholder?: string;
+  autoComplete?: string;
+  inputMode?: "email" | "tel" | "text" | "numeric" | "search" | "url";
 }) {
   return (
     <div>
-      <label htmlFor={name} className="block text-sm text-text-secondary mb-2">{label}</label>
+      <label htmlFor={name} className="block text-sm text-text-secondary mb-2">
+        {label}
+        {required && <span className="sr-only"> (requerido)</span>}
+        {required && <span aria-hidden="true" className="text-accent ml-0.5">*</span>}
+      </label>
       <input
         id={name}
         type={type}
@@ -230,10 +271,14 @@ function InputField({
         value={value}
         onChange={onChange}
         required={required}
+        aria-required={required || undefined}
         placeholder={placeholder}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        maxLength={type === "email" ? 254 : 120}
         className="w-full bg-white/[0.03] border border-white/[0.08] rounded-xl px-4 py-3
-                   text-white text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
-                   transition-colors duration-300 placeholder:text-text-muted"
+                   text-white text-base sm:text-sm outline-none focus:border-accent focus:ring-1 focus:ring-accent/40
+                   transition-colors duration-300 placeholder:text-text-muted min-h-[44px]"
       />
     </div>
   );

@@ -53,7 +53,7 @@ export default function Hero({ banners }: HeroProps) {
   return (
     <section
       id="inicio"
-      className="relative min-h-screen flex items-end pb-20 md:pb-28 overflow-hidden"
+      className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden"
     >
       {/* Background slides */}
       <AnimatePresence mode="wait">
@@ -66,14 +66,14 @@ export default function Hero({ banners }: HeroProps) {
           className="absolute inset-0 z-0"
         >
           {slide.backgroundUrl ? (
-            slide.backgroundIsVideo ||
-            slide.backgroundUrl.endsWith(".mp4") ||
-            slide.backgroundUrl.endsWith(".webm") ? (
+            slide.backgroundIsVideo ? (
               <video
                 autoPlay
                 muted
                 loop
                 playsInline
+                preload="metadata"
+                aria-label={slide.title}
                 className="w-full h-full object-cover"
               >
                 <source src={slide.backgroundUrl} type="video/mp4" />
@@ -134,16 +134,23 @@ export default function Hero({ banners }: HeroProps) {
 
       {/* Dot indicators */}
       {hasMultiple && (
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2">
+        <div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex gap-2"
+          role="tablist"
+          aria-label="Paginación del hero"
+        >
           {slides.map((_, idx) => (
             <button
               key={idx}
               onClick={() => goTo(idx)}
-              aria-label={`Ir al slide ${idx + 1}`}
-              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${
+              role="tab"
+              aria-selected={idx === current}
+              aria-current={idx === current ? "true" : undefined}
+              aria-label={`Ir al slide ${idx + 1} de ${slides.length}`}
+              className={`h-2.5 rounded-full transition-all duration-300 min-w-[10px] min-h-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
                 idx === current
                   ? "bg-accent w-8"
-                  : "bg-white/40 hover:bg-white/70"
+                  : "w-2.5 bg-white/40 hover:bg-white/70"
               }`}
             />
           ))}
