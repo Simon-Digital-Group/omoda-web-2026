@@ -98,10 +98,10 @@ export const VEHICLE_MODELS: VehicleModel[] = [
 
 export const SITE_CONFIG = {
   siteName: "OMODA | JAECOO Uruguay",
-  phone: "+598 2XXX XXXX",
+  phone: "+598 99 100 331",
   email: "ventas@omodajaecoo.com.uy",
-  address: "Av. Italia XXXX, Montevideo, Uruguay",
+  address: "Galicia 908, Montevideo, Uruguay",
   instagram: "https://instagram.com/omodajaecoo.uy",
   facebook: "https://facebook.com/omodajaecoouy",
-  whatsapp: "https://wa.me/598XXXXXXXX",
+  whatsapp: "https://wa.me/59899100331",
 };

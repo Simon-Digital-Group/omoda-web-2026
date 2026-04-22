@@ -7,9 +7,11 @@ import { getNetworkLocations } from "@/lib/contentful";
 import { SITE_CONFIG } from "@/lib/data";
 
 export const metadata: Metadata = {
-  title: "Concesionarios | OMODA JAECOO Uruguay",
+  title: "Concesionarios",
   description:
-    "Encontrá el concesionario OMODA y JAECOO más cercano en Uruguay. Toda la red de ventas autorizada.",
+    "Encontrá el concesionario OMODA y JAECOO más cercano en Uruguay. Toda la red de ventas autorizada en Montevideo y el interior.",
+  alternates: { canonical: "/concesionarios" },
+  keywords: ["concesionario OMODA Uruguay", "concesionario JAECOO Uruguay", "concesionario OMODA Montevideo"],
 };
 
 export const revalidate = 60;

@@ -106,9 +106,25 @@ export default function Footer() {
           <p className="text-xs text-text-muted">
             &copy; {year} OMODA | JAECOO Uruguay. Todos los derechos reservados.
           </p>
-          <p className="text-xs text-text-muted">
-            Representante oficial: Santa Rosa Automotores
-          </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-text-muted">
+            <a
+              href="/politica-de-privacidad"
+              className="hover:text-white transition-colors"
+            >
+              Política de Privacidad
+            </a>
+            <span className="text-white/[0.1]">|</span>
+            <span>Representante oficial: Santa Rosa Automotores</span>
+            <span className="text-white/[0.1]">|</span>
+            <a
+              href="https://simondigitalgroup.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-white transition-colors"
+            >
+              Desarrollado por Simon
+            </a>
+          </div>
         </div>
       </div>
     </footer>

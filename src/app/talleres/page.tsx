@@ -5,9 +5,11 @@ import NetworkGrid from "@/components/network/NetworkGrid";
 import { getNetworkLocations } from "@/lib/contentful";
 
 export const metadata: Metadata = {
-  title: "Talleres Autorizados | OMODA JAECOO Uruguay",
+  title: "Talleres Autorizados",
   description:
-    "Encontrá los talleres de servicio autorizados OMODA y JAECOO en todo Uruguay. Atención profesional y repuestos originales.",
+    "Talleres de servicio autorizados OMODA y JAECOO en todo Uruguay. Técnicos certificados, diagnóstico oficial y repuestos originales.",
+  alternates: { canonical: "/talleres" },
+  keywords: ["taller OMODA Uruguay", "taller JAECOO Uruguay", "service oficial OMODA"],
 };
 
 export const revalidate = 60;

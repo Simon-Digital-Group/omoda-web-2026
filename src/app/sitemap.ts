@@ -1,35 +1,29 @@
 import type { MetadataRoute } from "next";
 import { ALL_MODEL_SLUGS } from "@/lib/models-data";
+import { getVehicleModels } from "@/lib/contentful";
 
-export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://omodajaecoo.com.uy";
+const BASE = "https://omodajaecoo.com.uy";
 
-  const modelPages = ALL_MODEL_SLUGS.map((slug) => ({
-    url: `${baseUrl}/modelos/${slug}`,
-    lastModified: new Date(),
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const cmsModels = await getVehicleModels().catch(() => []);
+  const slugs = cmsModels.length > 0
+    ? Array.from(new Set(cmsModels.map((m) => m.slug).filter(Boolean)))
+    : ALL_MODEL_SLUGS;
+
+  const now = new Date();
+
+  const modelPages = slugs.map((slug) => ({
+    url: `${BASE}/modelos/${slug}`,
+    lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
 
   return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/concesionarios`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
-    {
-      url: `${baseUrl}/talleres`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.6,
-    },
+    { url: BASE, lastModified: now, changeFrequency: "weekly", priority: 1 },
+    { url: `${BASE}/concesionarios`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/talleres`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE}/politica-de-privacidad`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     ...modelPages,
   ];
 }

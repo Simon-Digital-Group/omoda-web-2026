@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
 import ModelCarousel from "@/components/ModelCarousel";
@@ -7,11 +8,20 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import { getHeroBanners, getVehicleModels } from "@/lib/contentful";
 
-export const revalidate = 60; // revalidate every 60 seconds
+export const revalidate = 60;
+
+export const metadata: Metadata = {
+  title: "OMODA | JAECOO Uruguay — SUVs Premium",
+  description:
+    "Concesionario oficial OMODA y JAECOO en Uruguay. SUVs premium con diseño, tecnología y rendimiento excepcional. Agendá tu test drive.",
+  alternates: { canonical: "/" },
+};
 
 export default async function Home() {
-  const banners = await getHeroBanners();
-  const cmsModels = await getVehicleModels();
+  const [banners, cmsModels] = await Promise.all([
+    getHeroBanners(),
+    getVehicleModels(),
+  ]);
 
   return (
     <main id="main-content" className="min-h-screen">

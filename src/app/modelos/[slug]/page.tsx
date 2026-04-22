@@ -24,19 +24,52 @@ export function generateStaticParams() {
   return ALL_MODEL_SLUGS.map((slug) => ({ slug }));
 }
 
-export function generateMetadata({ params }: PageProps): Metadata {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const fallback = MODEL_PAGES[params.slug];
-  if (!fallback) return {};
+  const cms = await getVehicleModelBySlug(params.slug).catch(() => null);
+  if (!fallback && !cms) return {};
+
+  const name = cms?.name || fallback?.name || "";
+  const tagline = cms?.tagline || fallback?.tagline || "";
+  const description = cms?.description || fallback?.heroDescription || "";
+  const image = (cms?.heroIsVideo ? "" : cms?.heroImage) || fallback?.heroImage || "";
+  const canonical = `/modelos/${params.slug}`;
 
   return {
-    title: `${fallback.name} — ${fallback.tagline} | OMODA JAECOO Uruguay`,
-    description: fallback.heroDescription,
+    title: `${name} — ${tagline} | OMODA JAECOO Uruguay`,
+    description: description.slice(0, 160),
+    alternates: { canonical },
     openGraph: {
-      title: `${fallback.name} — ${fallback.tagline}`,
-      description: fallback.heroDescription,
-      images: [fallback.heroImage],
+      title: `${name} — ${tagline}`,
+      description,
+      url: canonical,
+      type: "website",
+      images: image ? [{ url: image, width: 1200, height: 630, alt: name }] : [],
     },
+    twitter: {
+      card: "summary_large_image",
+      title: `${name} — ${tagline}`,
+      description,
+      images: image ? [image] : [],
+    },
+    robots: { index: true, follow: true },
   };
+}
+
+// Escape </script> inside JSON-LD to prevent breaking out of <script> block
+function safeJsonLd(obj: unknown): string {
+  return JSON.stringify(obj).replace(/</g, "\\u003c");
+}
+
+// Parse price string like "USD 29.990" → { value: 29990, currency: "USD" }
+function parsePrice(raw: string): { value: number; currency: string } | null {
+  if (!raw) return null;
+  const match = raw.match(/([A-Z]{3})?\s*([\d.,]+)/);
+  if (!match) return null;
+  const currency = (match[1] || "USD").toUpperCase();
+  const num = Number(match[2].replace(/\./g, "").replace(/,/g, "."));
+  if (!Number.isFinite(num) || num <= 0) return null;
+  return { value: num, currency };
 }
 
 /**
@@ -139,22 +172,51 @@ export default async function ModelPage({ params }: PageProps) {
 
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Vehicle",
-            name: name,
-            brand: { "@type": "Brand", name: brand },
-            description: pick(cms?.description, s?.heroDescription || ""),
-            offers: {
-              "@type": "Offer",
-              price: pick(cms?.price, s?.price || ""),
-              priceCurrency: "USD",
-              availability: "https://schema.org/InStock",
-            },
-          }),
-        }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(buildJsonLd()) }}
       />
     </main>
   );
+
+  function buildJsonLd() {
+    const priceRaw = pick(cms?.price, s?.price || "");
+    const priceParsed = parsePrice(priceRaw);
+    const imageUrl = cms?.heroIsVideo ? "" : pick(cms?.heroImage, s?.heroImage || "");
+    const descriptionText = pick(cms?.description, s?.heroDescription || "");
+    const url = `https://omodajaecoo.com.uy/modelos/${params.slug}`;
+
+    return {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Vehicle",
+          "@id": `${url}#vehicle`,
+          name,
+          brand: { "@type": "Brand", name: brand },
+          description: descriptionText,
+          url,
+          image: imageUrl || undefined,
+          bodyType: "SUV",
+          fuelType: pick(cms?.fuelType, s?.fuelType || "Nafta"),
+          vehicleModelDate: new Date().getFullYear().toString(),
+          offers: priceParsed
+            ? {
+                "@type": "Offer",
+                price: priceParsed.value,
+                priceCurrency: priceParsed.currency,
+                availability: "https://schema.org/InStock",
+                url,
+              }
+            : undefined,
+        },
+        {
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Inicio", item: "https://omodajaecoo.com.uy" },
+            { "@type": "ListItem", position: 2, name: "Modelos", item: "https://omodajaecoo.com.uy/#modelos" },
+            { "@type": "ListItem", position: 3, name },
+          ],
+        },
+      ],
+    };
+  }
 }
