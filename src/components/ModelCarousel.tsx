@@ -93,14 +93,14 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
         {/* Model tabs */}
         <motion.div
           variants={fadeInUp}
-          className="flex justify-center gap-1 mb-16 overflow-x-auto no-scrollbar px-4"
+          className="flex md:justify-center gap-1 mb-16 overflow-x-auto no-scrollbar px-4"
         >
           {models.map((model, i) => (
             <button
               key={model.slug}
               onClick={() => navigate(i)}
               className={cn(
-                "relative px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap rounded-full transition-all duration-300",
+                "relative px-3 py-2 sm:px-5 sm:py-3 text-xs sm:text-sm font-medium whitespace-nowrap rounded-full transition-all duration-300 flex-shrink-0",
                 i === activeIndex
                   ? "text-white"
                   : "text-text-muted hover:text-text-secondary"
@@ -146,7 +146,6 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           <div
             className="relative aspect-[4/3] sm:aspect-auto sm:h-[440px] md:h-[520px] mx-4 md:mx-20
                           rounded-[24px] overflow-hidden
-                          bg-white/[0.02] border border-white/[0.06]
                           flex items-center justify-center"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
@@ -223,22 +222,6 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
             </div>
           </motion.div>
 
-          {/* Mobile swipe dots */}
-          <div className="flex justify-center gap-3 mt-8 md:hidden">
-            {models.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => navigate(i)}
-                className={cn(
-                  "h-3 rounded-full transition-all duration-300",
-                  i === activeIndex
-                    ? "bg-accent w-8"
-                    : "w-3 bg-white/20 hover:bg-white/40"
-                )}
-                aria-label={`Modelo ${i + 1}`}
-              />
-            ))}
-          </div>
         </div>
       </motion.div>
     </section>

@@ -187,13 +187,6 @@ export default function ContactForm() {
             className="lg:col-span-2 flex flex-col gap-6"
           >
             <div className="glass p-4 sm:p-6">
-              <h3 className="text-sm font-semibold text-white mb-1">Concesionario</h3>
-              <p className="text-sm text-text-secondary leading-relaxed">
-                {SITE_CONFIG.address}
-              </p>
-            </div>
-
-            <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Teléfono</h3>
               <p className="text-sm text-text-secondary">{SITE_CONFIG.phone}</p>
             </div>
@@ -202,18 +195,6 @@ export default function ContactForm() {
               <h3 className="text-sm font-semibold text-white mb-1">Email</h3>
               <p className="text-sm text-text-secondary">{SITE_CONFIG.email}</p>
             </div>
-
-            <a
-              href={SITE_CONFIG.whatsapp}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass p-4 sm:p-6 group hover:border-white/[0.12] transition-all duration-300"
-            >
-              <h3 className="text-sm font-semibold text-white mb-0.5">WhatsApp</h3>
-              <p className="text-sm text-text-secondary group-hover:text-accent transition-colors">
-                Chateá con nosotros
-              </p>
-            </a>
           </motion.div>
         </div>
       </motion.div>

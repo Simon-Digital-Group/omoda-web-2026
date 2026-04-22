@@ -112,7 +112,7 @@ export default function Hero({ banners }: HeroProps) {
           <div className="max-w-3xl">
             <motion.h1
               variants={fadeInUp}
-              className="text-[clamp(1.5rem,8vw,7rem)] leading-[1.05] tracking-tight font-michroma font-bold text-white uppercase whitespace-nowrap mb-6"
+              className="text-[clamp(1.75rem,8vw,7rem)] leading-[1.05] tracking-tight font-michroma font-bold text-white uppercase mb-6 break-words md:whitespace-nowrap"
             >
               {slide.title}
             </motion.h1>
