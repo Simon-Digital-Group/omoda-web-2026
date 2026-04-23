@@ -13,6 +13,8 @@ import ModelFeatureGrid from "@/components/model-page/ModelFeatureGrid";
 import ModelSpecs from "@/components/model-page/ModelSpecs";
 import ModelPowertrain from "@/components/model-page/ModelPowertrain";
 import ModelCTA from "@/components/model-page/ModelCTA";
+import ModelFAQSection from "@/components/model-page/ModelFAQ";
+import { getModelFaqs, faqsJsonLd } from "@/lib/model-faqs";
 
 export const revalidate = 60;
 
@@ -161,6 +163,16 @@ export default async function ModelPage({ params }: PageProps) {
         modelName={name}
       />
 
+      <ModelFAQSection
+        faqs={getModelFaqs({
+          name,
+          brand,
+          price: pick(cms?.price, s?.price || ""),
+          fuelType: cms?.fuelType,
+        })}
+        modelName={name}
+      />
+
       <ModelCTA
         modelName={name}
         price={pick(cms?.price, s?.price || "")}
@@ -183,6 +195,8 @@ export default async function ModelPage({ params }: PageProps) {
     const imageUrl = cms?.heroIsVideo ? "" : pick(cms?.heroImage, s?.heroImage || "");
     const descriptionText = pick(cms?.description, s?.heroDescription || "");
     const url = `https://omodajaecoo.com.uy/modelos/${params.slug}`;
+    const faqs = getModelFaqs({ name, brand, price: priceRaw, fuelType: cms?.fuelType });
+    const faqSchema = faqsJsonLd(faqs);
 
     return {
       "@context": "https://schema.org",
@@ -215,6 +229,10 @@ export default async function ModelPage({ params }: PageProps) {
             { "@type": "ListItem", position: 2, name: "Modelos", item: "https://omodajaecoo.com.uy/#modelos" },
             { "@type": "ListItem", position: 3, name },
           ],
+        },
+        {
+          "@type": faqSchema["@type"],
+          mainEntity: faqSchema.mainEntity,
         },
       ],
     };

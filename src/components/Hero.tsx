@@ -121,10 +121,19 @@ export default function Hero({ banners }: HeroProps) {
               variants={fadeInUp}
               className="flex flex-col sm:flex-row gap-4"
             >
-              <a href={slide.ctaLink} className="btn-primary text-base">
+              <a
+                href={slide.ctaLink}
+                className="btn-primary text-base"
+                data-event="hero_cta_primary"
+                data-event-label={slide.ctaText}
+              >
                 {slide.ctaText}
               </a>
-              <a href="#contacto" className="btn-secondary text-base">
+              <a
+                href="#contacto"
+                className="btn-secondary text-base"
+                data-event="hero_cta_quote"
+              >
                 Solicitar Cotización
               </a>
             </motion.div>

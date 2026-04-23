@@ -45,7 +45,12 @@ export default async function ConcesionariosPage() {
 
           {/* Contact CTA */}
           <div className="flex flex-wrap gap-3">
-            <a href="tel:+59899100331" className="btn-primary">
+            <a
+              href="tel:+59899100331"
+              className="btn-primary"
+              data-event="phone_click"
+              data-event-location="concesionarios_hero"
+            >
               <Phone className="w-4 h-4" />
               +598 99 100 331
             </a>
@@ -54,6 +59,8 @@ export default async function ConcesionariosPage() {
               target="_blank"
               rel="noopener noreferrer"
               className="btn-outline"
+              data-event="whatsapp_click"
+              data-event-location="concesionarios_hero"
             >
               Consultar por WhatsApp
             </a>

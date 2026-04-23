@@ -8,7 +8,7 @@ export default function Footer() {
     <footer className="relative border-t border-white/[0.06]">
 
       <div className="container-custom py-8 sm:py-12 md:py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
           {/* Brand */}
           <div>
             <Image
@@ -81,6 +81,31 @@ export default function Footer() {
             </ul>
           </div>
 
+          {/* Red */}
+          <div>
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
+              Red
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <a
+                  href="/concesionarios"
+                  className="text-sm text-text-secondary hover:text-white transition-colors duration-300"
+                >
+                  Concesionarios
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/talleres"
+                  className="text-sm text-text-secondary hover:text-white transition-colors duration-300"
+                >
+                  Talleres Autorizados
+                </a>
+              </li>
+            </ul>
+          </div>
+
           {/* Contact */}
           <div>
             <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
@@ -88,11 +113,18 @@ export default function Footer() {
             </h3>
             <ul className="space-y-3 text-sm text-text-secondary">
               <li>{SITE_CONFIG.address}</li>
-              <li>{SITE_CONFIG.phone}</li>
+              <li>
+                <a
+                  href={`tel:${SITE_CONFIG.phone.replace(/\s/g, "")}`}
+                  className="hover:text-white transition-colors"
+                >
+                  {SITE_CONFIG.phone}
+                </a>
+              </li>
               <li>
                 <a
                   href={`mailto:${SITE_CONFIG.email}`}
-                  className="hover:text-accent transition-colors"
+                  className="hover:text-white transition-colors break-all"
                 >
                   {SITE_CONFIG.email}
                 </a>

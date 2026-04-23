@@ -89,10 +89,21 @@ export default function ModelHero({
               <span className="font-light">Desde </span>
               <span className="font-semibold">{price}</span>
             </span>
-            <a href="#contacto-modelo" className="btn-primary">
+            <a
+              href="#contacto-modelo"
+              className="btn-primary"
+              data-event="test_drive_click"
+              data-event-location="model_hero"
+              data-event-model={name}
+            >
               Agendar Test Drive
             </a>
-            <a href="#especificaciones" className="btn-outline">
+            <a
+              href="#especificaciones"
+              className="btn-outline"
+              data-event="specs_click"
+              data-event-model={name}
+            >
               Ver Especificaciones
             </a>
           </motion.div>

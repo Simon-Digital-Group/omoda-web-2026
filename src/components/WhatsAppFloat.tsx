@@ -25,6 +25,8 @@ export default function WhatsAppFloat() {
       target="_blank"
       rel="noopener noreferrer"
       aria-label="Contactar por WhatsApp (abre en nueva pestaña)"
+      data-event="whatsapp_click"
+      data-event-location="float"
       className="fixed right-6 z-40 w-14 h-14 bg-[#25D366] rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-background"
       style={{
         bottom: consentResolved

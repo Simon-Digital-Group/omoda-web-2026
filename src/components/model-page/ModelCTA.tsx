@@ -64,7 +64,13 @@ export default function ModelCTA({ modelName, price, brand, brochureUrl }: Model
           variants={fadeInUp}
           className="flex flex-col sm:flex-row items-center justify-center gap-4"
         >
-          <a href="/#contacto" className="btn-primary text-base">
+          <a
+            href="/#contacto"
+            className="btn-primary text-base"
+            data-event="test_drive_click"
+            data-event-location="model_cta"
+            data-event-model={modelName}
+          >
             Agendar Test Drive
           </a>
           {brochureUrl && (
@@ -74,6 +80,8 @@ export default function ModelCTA({ modelName, price, brand, brochureUrl }: Model
               rel="noopener noreferrer"
               download
               className="btn-outline text-base"
+              data-event="brochure_download"
+              data-event-model={modelName}
             >
               Descargar Brochure
             </a>

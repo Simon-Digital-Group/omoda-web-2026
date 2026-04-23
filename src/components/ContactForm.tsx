@@ -35,10 +35,17 @@ export default function ContactForm() {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
+  const pushEvent = (event: string, data: Record<string, any> = {}) => {
+    if (typeof window === "undefined") return;
+    (window as any).dataLayer = (window as any).dataLayer || [];
+    (window as any).dataLayer.push({ event, ...data });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatus("submitting");
     setErrorMessage("");
+    pushEvent("lead_submit_attempt", { model: formData.model || "none" });
 
     try {
       const res = await fetch("/api/contact", {
@@ -52,15 +59,21 @@ export default function ContactForm() {
 
       if (res.ok) {
         setStatus("success");
+        pushEvent("lead_submit_success", {
+          model: formData.model || "none",
+          form_location: "home_contact",
+        });
         setFormData({ fullName: "", email: "", phone: "", model: "", message: "", website: "" });
       } else {
         const data = await res.json().catch(() => ({}));
         setErrorMessage(data.error || "Ocurrió un error. Intentá nuevamente.");
         setStatus("error");
+        pushEvent("lead_submit_error", { status: res.status });
       }
     } catch {
       setErrorMessage("No se pudo conectar con el servidor. Intentá nuevamente.");
       setStatus("error");
+      pushEvent("lead_submit_error", { status: "network" });
     }
   };
 

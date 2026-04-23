@@ -5,11 +5,16 @@ import dynamic from "next/dynamic";
 import ReducedMotionProvider from "@/components/ReducedMotionProvider";
 import "./globals.css";
 
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-T2SRZ76G";
+
 // Defer below-the-fold chrome; keeps framer-motion out of the critical path
 const CookieBanner = dynamic(() => import("@/components/CookieBanner"), {
   ssr: false,
 });
 const WhatsAppFloat = dynamic(() => import("@/components/WhatsAppFloat"), {
+  ssr: false,
+});
+const AnalyticsEvents = dynamic(() => import("@/components/AnalyticsEvents"), {
   ssr: false,
 });
 
@@ -146,8 +151,9 @@ export default function RootLayout({
   return (
     <html lang="es-UY" className={`${inter.variable} ${raleway.variable} ${michroma.variable} ${neueHaas.variable}`}>
       <head>
-        {/* GA4 default consent = denied (before any gtag loads) */}
+        {/* Google Consent Mode v2: default denied BEFORE GTM loads */}
         <script
+          id="consent-default"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -157,13 +163,40 @@ export default function RootLayout({
                 analytics_storage: 'denied',
                 ad_user_data: 'denied',
                 ad_personalization: 'denied',
+                functionality_storage: 'granted',
+                security_storage: 'granted',
                 wait_for_update: 500
               });
+              gtag('set', 'ads_data_redaction', true);
+              gtag('set', 'url_passthrough', true);
+            `,
+          }}
+        />
+        {/* Google Tag Manager */}
+        <script
+          id="gtm-script"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','${GTM_ID}');
             `,
           }}
         />
       </head>
       <body className="bg-background text-text-primary antialiased">
+        {/* GTM noscript fallback */}
+        <noscript>
+          <iframe
+            src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
+            height="0"
+            width="0"
+            style={{ display: "none", visibility: "hidden" }}
+            title="Google Tag Manager"
+          />
+        </noscript>
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-accent focus:text-background focus:rounded"
@@ -175,6 +208,7 @@ export default function RootLayout({
         </ReducedMotionProvider>
         <WhatsAppFloat />
         <CookieBanner />
+        <AnalyticsEvents />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(autoDealerSchema) }}
