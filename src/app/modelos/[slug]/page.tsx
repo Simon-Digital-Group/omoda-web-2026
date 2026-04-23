@@ -14,7 +14,9 @@ import ModelSpecs from "@/components/model-page/ModelSpecs";
 import ModelPowertrain from "@/components/model-page/ModelPowertrain";
 import ModelCTA from "@/components/model-page/ModelCTA";
 import ModelFAQSection from "@/components/model-page/ModelFAQ";
+import ModelSEOContent from "@/components/model-page/ModelSEOContent";
 import { getModelFaqs, faqsJsonLd } from "@/lib/model-faqs";
+import { getSeoContent } from "@/lib/model-seo-content";
 
 export const revalidate = 60;
 
@@ -162,6 +164,8 @@ export default async function ModelPage({ params }: PageProps) {
         specs={pick(cms?.specs, s?.specs || [])}
         modelName={name}
       />
+
+      <ModelSEOContent content={getSeoContent(params.slug)} />
 
       <ModelFAQSection
         faqs={getModelFaqs({
