@@ -28,7 +28,10 @@ export default function ModelKeyStats({ stats, brand }: ModelKeyStatsProps) {
     >
       <div className="container-custom">
         <div className="grid grid-cols-2 md:grid-cols-4">
-          {stats.map((stat, i) => (
+          {stats.map((stat, i) => {
+            const isRightColMobile = i % 2 === 1;
+            const isLast = i === stats.length - 1;
+            return (
             <motion.div
               key={stat.label}
               initial={{ opacity: 0, y: 16 }}
@@ -36,7 +39,9 @@ export default function ModelKeyStats({ stats, brand }: ModelKeyStatsProps) {
               transition={{ duration: 0.5, delay: i * 0.08, ease: "easeOut" }}
               className={cn(
                 "py-10 px-6 flex flex-col items-center md:items-start text-center md:text-left",
-                i < stats.length - 1 && "border-r border-white/[0.06]",
+                !isRightColMobile && !isLast && "border-r border-white/[0.06]",
+                !isRightColMobile && isLast && "md:border-r-0",
+                isRightColMobile && !isLast && "md:border-r md:border-white/[0.06]",
                 i >= 2 && "border-t border-white/[0.06] md:border-t-0"
               )}
             >
@@ -55,7 +60,8 @@ export default function ModelKeyStats({ stats, brand }: ModelKeyStatsProps) {
                 {stat.label}
               </p>
             </motion.div>
-          ))}
+          );
+          })}
         </div>
       </div>
     </section>

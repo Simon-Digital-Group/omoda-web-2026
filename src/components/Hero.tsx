@@ -19,7 +19,7 @@ interface HeroProps {
 }
 
 const DEFAULT_BANNER: HeroBanner = {
-  title: "SUVs Premium\nen Uruguay",
+  title: "SUVs Premium\en Uruguay",
   subtitle: "",
   ctaText: "Explorar Modelos",
   ctaLink: "#modelos",
@@ -156,11 +156,10 @@ export default function Hero({ banners }: HeroProps) {
               aria-selected={idx === current}
               aria-current={idx === current ? "true" : undefined}
               aria-label={`Ir al slide ${idx + 1} de ${slides.length}`}
-              className={`h-2.5 rounded-full transition-all duration-300 min-w-[10px] min-h-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                idx === current
+              className={`h-2.5 rounded-full transition-all duration-300 min-w-[10px] min-h-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${idx === current
                   ? "bg-accent w-8"
                   : "w-2.5 bg-white/40 hover:bg-white/70"
-              }`}
+                }`}
             />
           ))}
         </div>

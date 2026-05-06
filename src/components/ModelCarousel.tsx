@@ -145,7 +145,7 @@ export default function ModelCarousel({ cmsModels }: ModelCarouselProps) {
           {/* Car image with watermark name */}
           <div
             className="relative aspect-[4/3] sm:aspect-auto sm:h-[440px] md:h-[520px] mx-4 md:mx-20
-                          rounded-[24px] overflow-hidden
+                          rounded-[24px] overflow-hidden isolate [transform:translateZ(0)]
                           flex items-center justify-center"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}

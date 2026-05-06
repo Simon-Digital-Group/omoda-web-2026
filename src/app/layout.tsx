@@ -99,13 +99,6 @@ export const metadata: Metadata = {
     description: "La nueva generación de SUVs premium en Uruguay.",
     images: ["/opengraph-image"],
   },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png" },
-    ],
-    apple: "/apple-icon.png",
-  },
   manifest: "/manifest.webmanifest",
   formatDetection: { telephone: true, email: true, address: false },
 };
