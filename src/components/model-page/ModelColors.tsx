@@ -25,6 +25,10 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
 
   const isOmoda = brand === "OMODA";
 
+  // Guard for CMS models that haven't had colors uploaded yet — render nothing
+  // rather than crashing on undefined activeColor.
+  if (!colors || colors.length === 0) return null;
+
   const activeColor = colors[selected];
 
   return (
