@@ -54,8 +54,10 @@ export default async function ConcesionariosPage() {
               <Phone className="w-4 h-4" />
               +598 99 100 331
             </a>
+            {/* SECURITY: encodeURIComponent prevents CMS-supplied text from injecting
+                 extra URL parameters or escaping the wa.me domain. */}
             <a
-              href={`${SITE_CONFIG.whatsapp}?text=Hola! Me gustaría conocer un concesionario cercano`}
+              href={`${SITE_CONFIG.whatsapp}?text=${encodeURIComponent("Hola! Me gustaría conocer un concesionario cercano")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-outline"

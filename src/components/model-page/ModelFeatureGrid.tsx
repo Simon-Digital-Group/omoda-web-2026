@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { motion, useInView } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
+import OptimizedImage from "@/components/OptimizedImage";
 import type { ModelFeature } from "@/lib/models-data";
 
 interface ModelFeatureGridProps {
@@ -46,18 +47,47 @@ export default function ModelFeatureGrid({
 
         {/* Feature cards */}
         <div className="grid sm:grid-cols-2 gap-5 max-w-4xl mx-auto">
-          {features.map((feature, i) => (
+          {features.map((feature) => (
               <motion.div
                 key={feature.title}
                 variants={fadeInUp}
-                className="glass group p-5 md:p-8 hover:border-white/[0.12] transition-all duration-300"
+                className="glass group overflow-hidden hover:border-white/[0.12] transition-all duration-300 flex flex-col"
               >
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-text-secondary leading-relaxed">
-                  {feature.description}
-                </p>
+                {/* Image area — 16/9 ratio at the top of the card.
+                    Renders the CMS image if present; otherwise a subtle dark
+                    placeholder so the card layout stays consistent until the
+                    client uploads the assets to Contentful. */}
+                <div className="relative w-full aspect-[16/9] overflow-hidden bg-white/[0.02] border-b border-white/[0.06]">
+                  {feature.image ? (
+                    <OptimizedImage
+                      src={feature.image}
+                      alt={feature.title}
+                      preset="designSection"
+                      fill
+                      objectFit="cover"
+                      sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 420px"
+                      className="group-hover:scale-[1.02] transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center">
+                        <span className="text-text-muted text-[10px] uppercase tracking-widest">
+                          Imagen
+                        </span>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text area */}
+                <div className="p-5 md:p-7 flex-1">
+                  <h3 className="text-lg font-semibold text-white mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-text-secondary leading-relaxed">
+                    {feature.description}
+                  </p>
+                </div>
               </motion.div>
           ))}
         </div>

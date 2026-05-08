@@ -28,6 +28,7 @@ export interface ModelFeature {
   icon: string; // lucide icon name
   title: string;
   description: string;
+  image?: string; // optional image URL — when present, rendered at top of the feature card
 }
 
 export interface SpecGroup {

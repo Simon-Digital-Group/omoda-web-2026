@@ -1,11 +1,18 @@
 import { createClient, Entry } from "contentful";
 import { cache } from "react";
 
+// SECURITY: These env vars must NEVER be prefixed with NEXT_PUBLIC_. They are
+// server-only secrets; the Contentful SDK is only imported in server components
+// and API routes. Verify: grep -r "NEXT_PUBLIC_CONTENTFUL" src/ should return nothing.
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || "",
   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || "",
 });
 
+// SECURITY: The preview client uses CONTENTFUL_PREVIEW_TOKEN which has access to
+// unpublished (draft) content. It must only be instantiated server-side and must
+// never be called from a route that isn't protected by the preview secret guard
+// in src/middleware.ts.
 const previewClient = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || "",
   accessToken: process.env.CONTENTFUL_PREVIEW_TOKEN || "",
@@ -13,7 +20,36 @@ const previewClient = createClient({
 });
 
 export function getClient(preview = false) {
+  // SECURITY: Extra runtime guard — if preview is requested but no preview token
+  // is configured, fall back to the public client rather than erroring with an
+  // unhelpful message or leaking that the feature exists.
+  if (preview && !process.env.CONTENTFUL_PREVIEW_TOKEN) {
+    console.warn("[contentful] Preview requested but CONTENTFUL_PREVIEW_TOKEN is not set; falling back to public client.");
+    return client;
+  }
   return preview ? previewClient : client;
+}
+
+// SECURITY: Sanitize any URL that comes from Contentful CMS fields before use
+// in href attributes. Accepts only http/https/tel/mailto schemes and Contentful
+// CDN URLs. Rejects javascript:, data:, vbscript:, and anything else.
+export function sanitizeCmsUrl(raw: string | undefined | null): string {
+  if (!raw || typeof raw !== "string") return "";
+  const trimmed = raw.trim();
+  // Allow safe schemes and Contentful CDN paths
+  if (
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("tel:") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("#")
+  ) {
+    return trimmed;
+  }
+  // Block everything else (javascript:, data:, vbscript:, etc.)
+  console.warn("[contentful] sanitizeCmsUrl: rejected URL scheme:", trimmed.slice(0, 40));
+  return "";
 }
 
 /**
@@ -48,12 +84,16 @@ export const getHeroBanners = cache(async function getHeroBanners() {
         title: f.title || "",
         subtitle: f.subtitle || "",
         ctaText: f.ctaText || "Explorar Modelos",
-        ctaLink: f.ctaLink || "#modelos",
+        // SECURITY: sanitize CMS-supplied link before rendering into href
+        ctaLink: sanitizeCmsUrl(f.ctaLink) || "#modelos",
         backgroundUrl: mediaUrl(f.backgroundMedia),
         backgroundIsVideo: isVideo(f.backgroundMedia),
       };
     });
-  } catch {
+  } catch (err) {
+    // SECURITY: Log errors so Contentful outages are visible in logs, but never
+    // expose error details to the client — return safe empty fallback instead.
+    console.error("[contentful] getHeroBanners failed:", (err as Error)?.message);
     return [];
   }
 });
@@ -95,7 +135,8 @@ export const getVehicleModels = cache(async function getVehicleModels() {
           : [],
       };
     });
-  } catch {
+  } catch (err) {
+    console.error("[contentful] getVehicleModels failed:", (err as Error)?.message);
     return [];
   }
 });
@@ -196,10 +237,14 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       interiorHighlights: parseHighlights(f.highligh2daSeccin || f.interiorHighlights),
 
       // Technology Features (field may be techFeatures or technologyFeatures)
+      // Each feature entry can include an optional `image` media reference — when
+      // present it is rendered at the top of the card. Until uploaded, the card
+      // gracefully falls back to title + description only.
       technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => ({
         icon: feat.icon || "Star",
         title: feat.title || "",
         description: feat.description || "",
+        image: mediaUrl(feat.image),
       })),
 
       // Safety Features (field may be safetyFeatures or safeFeatures)
@@ -207,6 +252,7 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         icon: feat.icon || "Shield",
         title: feat.title || "",
         description: feat.description || "",
+        image: mediaUrl(feat.image),
       })),
 
       // Specs (referenced specGroup entries)
@@ -227,7 +273,8 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         transmission: opt.transmission || "",
       })),
     };
-  } catch {
+  } catch (err) {
+    console.error("[contentful] getVehicleModelBySlug failed:", (err as Error)?.message);
     return null;
   }
 });
@@ -265,7 +312,8 @@ export const getNetworkLocations = cache(async function getNetworkLocations(
           hours: f.hours || undefined,
         };
       });
-  } catch {
+  } catch (err) {
+    console.error("[contentful] getNetworkLocations failed:", (err as Error)?.message);
     return [];
   }
 });
@@ -289,11 +337,14 @@ export const getSiteSettings = cache(async function getSiteSettings() {
       phone: f.phone || "",
       email: f.email || "",
       address: f.address || "",
-      instagram: f.instagram || "",
-      facebook: f.facebook || "",
-      whatsapp: f.whatsapp || "",
+      // SECURITY: Social and WhatsApp URLs come from the CMS and are rendered
+      // directly into href attributes — sanitize to allow only safe URL schemes.
+      instagram: sanitizeCmsUrl(f.instagram),
+      facebook: sanitizeCmsUrl(f.facebook),
+      whatsapp: sanitizeCmsUrl(f.whatsapp),
     };
-  } catch {
+  } catch (err) {
+    console.error("[contentful] getSiteSettings failed:", (err as Error)?.message);
     return null;
   }
 });
