@@ -1,8 +1,15 @@
 import Image from "next/image";
 import { NAV_LINKS, SITE_CONFIG, VEHICLE_MODELS } from "@/lib/data";
+import { getVehicleModels } from "@/lib/contentful";
 
-export default function Footer() {
+export default async function Footer() {
   const year = new Date().getFullYear();
+  // Pull models from CMS so newly added Contentful models appear in the footer
+  // automatically. Falls back to static list if CMS is empty/unreachable.
+  const cmsModels = await getVehicleModels().catch(() => []);
+  const models = cmsModels.length > 0
+    ? cmsModels.map((m) => ({ slug: m.slug, name: m.name }))
+    : VEHICLE_MODELS.map((m) => ({ slug: m.slug, name: m.name }));
 
   return (
     <footer className="relative border-t border-white/[0.06]">
@@ -67,7 +74,7 @@ export default function Footer() {
               Modelos
             </h3>
             <ul className="space-y-3">
-              {VEHICLE_MODELS.map((model) => (
+              {models.map((model) => (
                 <li key={model.slug}>
                   <a
                     href={`/modelos/${model.slug}`}

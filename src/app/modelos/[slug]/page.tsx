@@ -24,8 +24,14 @@ interface PageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return ALL_MODEL_SLUGS.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  // Merge static slugs with CMS-managed slugs so any new model added in
+  // Contentful is prerendered at build time. Falls back gracefully if the CMS
+  // is unreachable during build (still ships the static set).
+  const cmsModels = await getVehicleModels().catch(() => []);
+  const cmsSlugs = cmsModels.map((m) => m.slug).filter(Boolean);
+  const all = Array.from(new Set([...ALL_MODEL_SLUGS, ...cmsSlugs]));
+  return all.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
