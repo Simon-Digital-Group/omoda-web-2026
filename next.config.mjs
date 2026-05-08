@@ -100,6 +100,18 @@ const nextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      // The OMODA 5 EV 2027 entry was renamed in Contentful from
+      // `omoda5ev2027` to `omoda52027`. 301 keeps the old URL working
+      // and preserves any external links / search engine signals.
+      {
+        source: "/modelos/omoda5ev2027",
+        destination: "/modelos/omoda52027",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;
