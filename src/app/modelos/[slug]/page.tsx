@@ -171,7 +171,18 @@ export default async function ModelPage({ params }: PageProps) {
         modelName={name}
       />
 
-      <ModelSEOContent content={getSeoContent(params.slug)} />
+      <ModelSEOContent content={(() => {
+        const staticSeo = getSeoContent(params.slug);
+        const cmsParagraphs = (cms?.seoBody || "")
+          .split(/\n\s*\n+/)
+          .map((p: string) => p.trim())
+          .filter(Boolean);
+        const sectionLabel = pick(cms?.seoSectionLabel, staticSeo?.sectionLabel || "");
+        const heading = pick(cms?.seoHeading, staticSeo?.heading || "");
+        const paragraphs = cmsParagraphs.length > 0 ? cmsParagraphs : (staticSeo?.paragraphs || []);
+        if (!sectionLabel && !heading && paragraphs.length === 0) return null;
+        return { sectionLabel, heading, paragraphs };
+      })()} />
 
       <ModelFAQSection
         faqs={getModelFaqs({
