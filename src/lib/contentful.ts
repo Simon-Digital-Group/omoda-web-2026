@@ -282,9 +282,26 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       // SEO long-form content (optional from CMS). seoBody is plain long text;
       // paragraphs are split on blank lines. Each field falls back to static
       // copy in src/lib/model-seo-content.ts when empty.
-      seoSectionLabel: typeof f.seoSectionLabel === "string" ? f.seoSectionLabel : "",
-      seoHeading: typeof f.seoHeading === "string" ? f.seoHeading : "",
-      seoBody: typeof f.seoBody === "string" ? f.seoBody : "",
+      // Both camelCase and lowercase IDs are accepted because Contentful's
+      // auto-generated IDs are inconsistent (e.g. seosectionlabel vs seoSectionLabel).
+      seoSectionLabel:
+        typeof f.seoSectionLabel === "string"
+          ? f.seoSectionLabel
+          : typeof f.seosectionlabel === "string"
+            ? f.seosectionlabel
+            : "",
+      seoHeading:
+        typeof f.seoHeading === "string"
+          ? f.seoHeading
+          : typeof f.seoheading === "string"
+            ? f.seoheading
+            : "",
+      seoBody:
+        typeof f.seoBody === "string"
+          ? f.seoBody
+          : typeof f.seobody === "string"
+            ? f.seobody
+            : "",
     };
   } catch (err) {
     console.error("[contentful] getVehicleModelBySlug failed:", (err as Error)?.message);
