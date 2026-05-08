@@ -240,20 +240,26 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       // Each feature entry can include an optional `image` media reference — when
       // present it is rendered at the top of the card. Until uploaded, the card
       // gracefully falls back to title + description only.
-      technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => ({
-        icon: feat.icon || "Star",
-        title: feat.title || "",
-        description: feat.description || "",
-        image: mediaUrl(feat.image),
-      })),
+      technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => {
+        const img = mediaUrl(feat.image);
+        return {
+          icon: feat.icon || "Star",
+          title: feat.title || "",
+          description: feat.description || "",
+          ...(img ? { image: img } : {}),
+        };
+      }),
 
       // Safety Features (field may be safetyFeatures or safeFeatures)
-      safetyFeatures: resolveRefs(f.safaetyFeatures || f.safetyFeatures || f.safeFeatures).map((feat: any) => ({
-        icon: feat.icon || "Shield",
-        title: feat.title || "",
-        description: feat.description || "",
-        image: mediaUrl(feat.image),
-      })),
+      safetyFeatures: resolveRefs(f.safaetyFeatures || f.safetyFeatures || f.safeFeatures).map((feat: any) => {
+        const img = mediaUrl(feat.image);
+        return {
+          icon: feat.icon || "Shield",
+          title: feat.title || "",
+          description: feat.description || "",
+          ...(img ? { image: img } : {}),
+        };
+      }),
 
       // Specs (referenced specGroup entries)
       specs: resolveRefs(f.specs).map((group: any) => ({
