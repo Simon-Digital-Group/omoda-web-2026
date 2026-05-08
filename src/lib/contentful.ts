@@ -278,6 +278,13 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         range: opt.range || "",
         transmission: opt.transmission || "",
       })),
+
+      // SEO long-form content (optional from CMS). seoBody is plain long text;
+      // paragraphs are split on blank lines. Each field falls back to static
+      // copy in src/lib/model-seo-content.ts when empty.
+      seoSectionLabel: typeof f.seoSectionLabel === "string" ? f.seoSectionLabel : "",
+      seoHeading: typeof f.seoHeading === "string" ? f.seoHeading : "",
+      seoBody: typeof f.seoBody === "string" ? f.seoBody : "",
     };
   } catch (err) {
     console.error("[contentful] getVehicleModelBySlug failed:", (err as Error)?.message);
