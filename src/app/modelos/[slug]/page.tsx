@@ -120,6 +120,7 @@ export default async function ModelPage({ params }: PageProps) {
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
         heroIsVideo={cms?.heroIsVideo}
         price={pick(cms?.price, s?.price || "")}
+        primaryCtaLabel={cms?.ctaLabel}
       />
 
       <ModelKeyStats
@@ -199,6 +200,7 @@ export default async function ModelPage({ params }: PageProps) {
         price={pick(cms?.price, s?.price || "")}
         brand={brand}
         brochureUrl={cms?.brochureUrl}
+        primaryCtaLabel={cms?.ctaLabel}
       />
 
       <Footer />
