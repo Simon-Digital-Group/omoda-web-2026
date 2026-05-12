@@ -279,6 +279,17 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         transmission: opt.transmission || "",
       })),
 
+      // Optional per-model override for the primary CTA label (Hero + bottom CTA).
+      // Use it to switch a model into states like "Pre venta", "Próximamente",
+      // etc. Empty falls back to the hard-coded "Agendar Test Drive".
+      // Accepts both camelCase and lowercase Contentful IDs.
+      ctaLabel:
+        typeof f.ctaLabel === "string"
+          ? f.ctaLabel
+          : typeof f.ctalabel === "string"
+            ? f.ctalabel
+            : "",
+
       // SEO long-form content (optional from CMS). seoBody is plain long text;
       // paragraphs are split on blank lines. Each field falls back to static
       // copy in src/lib/model-seo-content.ts when empty.

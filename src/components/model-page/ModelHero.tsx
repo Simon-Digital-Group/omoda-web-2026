@@ -13,6 +13,7 @@ interface ModelHeroProps {
   heroImage: string;
   heroIsVideo?: boolean;
   price: string;
+  primaryCtaLabel?: string;
 }
 
 /**
@@ -28,6 +29,7 @@ export default function ModelHero({
   heroImage,
   heroIsVideo,
   price,
+  primaryCtaLabel,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
 
@@ -96,7 +98,7 @@ export default function ModelHero({
               data-event-location="model_hero"
               data-event-model={name}
             >
-              Agendar Test Drive
+              {primaryCtaLabel || "Agendar Test Drive"}
             </a>
             <a
               href="#especificaciones"
