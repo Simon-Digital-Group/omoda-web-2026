@@ -46,13 +46,13 @@ export default async function ConcesionariosPage() {
           {/* Contact CTA */}
           <div className="flex flex-wrap gap-3">
             <a
-              href="tel:+59899100331"
+              href="tel:+59892001372"
               className="btn-primary"
               data-event="phone_click"
               data-event-location="concesionarios_hero"
             >
               <Phone className="w-4 h-4" />
-              +598 99 100 331
+              +598 92 001 372
             </a>
             {/* SECURITY: encodeURIComponent prevents CMS-supplied text from injecting
                  extra URL parameters or escaping the wa.me domain. */}
@@ -103,7 +103,7 @@ export default async function ConcesionariosPage() {
                 No hay concesionarios disponibles en este momento.
               </p>
               <p className="text-text-muted text-sm mt-2">
-                Contactanos por WhatsApp o al +598 99 100 331 para más información.
+                Contactanos por WhatsApp o al +598 92 001 372 para más información.
               </p>
             </div>
           )}
