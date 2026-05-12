@@ -23,7 +23,7 @@ export const CONCESIONARIOS: NetworkLocation[] = [
     name: "Omoda-Jaecoo Santa Rosa",
     department: "Montevideo",
     address: "Galicia 908",
-    phone: "099 100 331",
+    phone: "092 001 372",
     email: "omoda-jaecoo@santarosa.com.uy",
     hours: "Lunes a Viernes 9:00–18:30",
   },
@@ -47,7 +47,7 @@ export const CONCESIONARIOS: NetworkLocation[] = [
     name: "Car One",
     department: "Canelones",
     address: "Interbalnearia esq. Camino de los Horneros",
-    phone: "099 100 331",
+    phone: "092 001 372",
     email: "omoda-jaecoo@santarosa.com.uy",
   },
   {

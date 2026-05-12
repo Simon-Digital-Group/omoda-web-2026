@@ -121,7 +121,7 @@ const autoDealerSchema = {
     "Concesionario oficial OMODA y JAECOO en Uruguay. SUVs premium con tecnología de vanguardia.",
   url: "https://omodajaecoo.com.uy",
   logo: "https://omodajaecoo.com.uy/images/omoda-jaecoo-logo.svg",
-  telephone: "+59899100331",
+  telephone: "+59892001372",
   email: "ventas@omodajaecoo.com.uy",
   brand: [
     { "@type": "Brand", name: "OMODA" },
