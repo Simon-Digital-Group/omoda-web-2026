@@ -261,11 +261,26 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         };
       }),
 
-      // Specs (referenced specGroup entries)
-      specs: resolveRefs(f.specs).map((group: any) => ({
-        category: group.category || "",
-        items: Array.isArray(group.items) ? group.items : [],
-      })),
+      // Specs (referenced specGroup entries).
+      // Tolerate two shapes in the JSON `items` field, because editors sometimes
+      // paste the full specGroup JSON (with its own category+items wrapper) into
+      // the items field instead of just the inner array:
+      //   shape A (correct):  items: [ { label, value }, ... ]
+      //   shape B (wrapped):  items: { category, items: [ { label, value }, ... ] }
+      // We unwrap shape B so the page still renders without requiring the editor
+      // to re-paste the JSON. Anything else falls back to an empty list.
+      specs: resolveRefs(f.specs).map((group: any) => {
+        const raw = group.items;
+        const items = Array.isArray(raw)
+          ? raw
+          : Array.isArray(raw?.items)
+            ? raw.items
+            : [];
+        return {
+          category: group.category || raw?.category || "",
+          items,
+        };
+      }),
 
       // Powertrain Options (referenced powertrainOption entries)
       powertrainOptions: resolveRefs(f.powertrainOptions).map((opt: any) => ({
