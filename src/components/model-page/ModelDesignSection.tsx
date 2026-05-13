@@ -94,7 +94,7 @@ export default function ModelDesignSection({
             <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-10 flex items-center gap-3">
               <button
                 onClick={prevImage}
-                className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white/80 hover:text-white transition-colors"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white/80 hover:text-white transition-colors"
                 aria-label="Imagen anterior"
               >
                 <ChevronLeft className="w-4 h-4" />
@@ -104,18 +104,25 @@ export default function ModelDesignSection({
                   <button
                     key={i}
                     onClick={() => setCurrentImage(i)}
-                    className={cn(
-                      "rounded-full transition-all duration-300",
-                      i === currentImage
-                        ? "w-5 h-1.5 bg-white"
-                        : "w-1.5 h-1.5 bg-white/40 hover:bg-white/70"
-                    )}
-                  />
+                    aria-label={`Ir a imagen ${i + 1}`}
+                    aria-current={i === currentImage ? "true" : undefined}
+                    className="min-w-[44px] min-h-[44px] flex items-center justify-center"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        "rounded-full transition-all duration-300 block",
+                        i === currentImage
+                          ? "w-5 h-1.5 bg-white"
+                          : "w-1.5 h-1.5 bg-white/40"
+                      )}
+                    />
+                  </button>
                 ))}
               </div>
               <button
                 onClick={nextImage}
-                className="p-1.5 rounded-full bg-black/50 backdrop-blur-sm text-white/80 hover:text-white transition-colors"
+                className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-full bg-black/50 backdrop-blur-sm text-white/80 hover:text-white transition-colors"
                 aria-label="Imagen siguiente"
               >
                 <ChevronRight className="w-4 h-4" />

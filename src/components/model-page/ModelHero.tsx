@@ -12,6 +12,8 @@ interface ModelHeroProps {
   description: string;
   heroImage: string;
   heroIsVideo?: boolean;
+  /** Optional still image shown while the video loads (improves mobile LCP) */
+  heroPoster?: string;
   price: string;
   primaryCtaLabel?: string;
 }
@@ -28,13 +30,14 @@ export default function ModelHero({
   description,
   heroImage,
   heroIsVideo,
+  heroPoster,
   price,
   primaryCtaLabel,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
 
   return (
-    <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
+    <section className="relative min-h-screen min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
       {/* Background image — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
         {heroIsVideo ? (
@@ -44,8 +47,10 @@ export default function ModelHero({
             loop
             playsInline
             preload="metadata"
+            poster={heroPoster || undefined}
             aria-label={`${brand} ${name}`}
             className="w-full h-full object-cover"
+            style={{ backgroundColor: "#0a1628" }}
           >
             <source src={heroImage} type="video/mp4" />
           </video>

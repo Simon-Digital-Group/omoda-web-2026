@@ -135,7 +135,7 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
                       "w-12 h-12 ring-2 ring-offset-2 ring-offset-background",
                       isOmoda ? "ring-accent" : "ring-accent-alt"
                     )
-                  : "w-9 h-9 hover:scale-110 opacity-70 hover:opacity-100"
+                  : "w-11 h-11 hover:scale-110 opacity-70 hover:opacity-100"
               )}
               style={
                 color.hex.includes(",")

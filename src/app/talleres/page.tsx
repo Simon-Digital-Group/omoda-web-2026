@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   keywords: ["taller OMODA Uruguay", "taller JAECOO Uruguay", "service oficial OMODA"],
 };
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function TalleresPage() {
   const talleres = await getNetworkLocations("taller");

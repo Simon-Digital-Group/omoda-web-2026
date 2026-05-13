@@ -11,6 +11,16 @@ import {
   type ImagePreset,
 } from "@/lib/image";
 
+// Static map: Tailwind JIT only generates classes it can find as plain strings.
+// Interpolated `object-${objectFit}` would not be detected and would silently
+// fall back to `object-fit: fill` (stretched).
+const OBJECT_FIT_CLASS = {
+  cover: "object-cover",
+  contain: "object-contain",
+  fill: "object-fill",
+  none: "object-none",
+} as const;
+
 interface OptimizedImageProps {
   /** Image source — Contentful URL, local path, or placeholder */
   src: string;
@@ -123,7 +133,7 @@ export default function OptimizedImage({
         priority={priority}
         quality={IMAGE_PRESETS[preset].quality}
         className={cn(
-          fill && `object-${objectFit}`,
+          fill && OBJECT_FIT_CLASS[objectFit],
           className
         )}
         onError={handleError}
@@ -151,7 +161,7 @@ export default function OptimizedImage({
         sizes={sizes || defaultSizes(preset)}
         priority={priority}
         className={cn(
-          fill && `object-${objectFit}`,
+          fill && OBJECT_FIT_CLASS[objectFit],
           className
         )}
         onError={handleError}
@@ -166,7 +176,7 @@ export default function OptimizedImage({
       src={src}
       alt={alt}
       className={cn(
-        fill && `absolute inset-0 w-full h-full object-${objectFit}`,
+        fill && cn("absolute inset-0 w-full h-full", OBJECT_FIT_CLASS[objectFit]),
         className
       )}
       loading={priority ? "eager" : "lazy"}

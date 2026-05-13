@@ -8,7 +8,9 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import { getHeroBanners, getVehicleModels } from "@/lib/contentful";
 
-export const revalidate = 60;
+// ISR window: 5 min. Marketing content rarely changes mid-day; this cuts
+// Contentful round-trips per request and improves TTFB from Uruguay.
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   title: "OMODA | JAECOO Uruguay — SUVs Premium",

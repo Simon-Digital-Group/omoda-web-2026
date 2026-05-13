@@ -15,7 +15,7 @@ export const metadata: Metadata = {
   keywords: ["concesionario OMODA Uruguay", "concesionario JAECOO Uruguay", "concesionario OMODA Montevideo"],
 };
 
-export const revalidate = 60;
+export const revalidate = 300;
 
 export default async function ConcesionariosPage() {
   const concesionarios = await getNetworkLocations("concesionario");

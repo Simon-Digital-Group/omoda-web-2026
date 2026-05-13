@@ -12,6 +12,8 @@ interface HeroBanner {
   ctaLink: string;
   backgroundUrl: string;
   backgroundIsVideo: boolean;
+  /** Optional poster image shown while the video loads (mobile 4G can take 2-4s) */
+  posterUrl?: string;
 }
 
 interface HeroProps {
@@ -53,10 +55,13 @@ export default function Hero({ banners }: HeroProps) {
   return (
     <section
       id="inicio"
-      className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden"
+      className="relative min-h-screen min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden"
     >
       {/* Background slides */}
-      <AnimatePresence mode="wait">
+      {/* initial={false}: first paint renders the LCP image/video without an
+          opacity fade-in. Slide rotations still crossfade because subsequent
+          key changes trigger the enter animation. */}
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current}
           initial={{ opacity: 0 }}
@@ -73,8 +78,10 @@ export default function Hero({ banners }: HeroProps) {
                 loop
                 playsInline
                 preload="metadata"
+                poster={slide.posterUrl || undefined}
                 aria-label={slide.title}
                 className="w-full h-full object-cover"
+                style={{ backgroundColor: "#0a1628" }}
               >
                 <source src={slide.backgroundUrl} type="video/mp4" />
               </video>
@@ -100,7 +107,9 @@ export default function Hero({ banners }: HeroProps) {
       <div className="absolute inset-0 bg-gradient-to-r from-background/80 via-transparent to-transparent z-[1]" />
 
       {/* Content */}
-      <AnimatePresence mode="wait">
+      {/* initial={false}: h1 + CTAs render visible on first paint (LCP win).
+          Slide rotations still stagger in. */}
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current}
           variants={staggerContainer}

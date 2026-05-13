@@ -88,6 +88,10 @@ export const getHeroBanners = cache(async function getHeroBanners() {
         ctaLink: sanitizeCmsUrl(f.ctaLink) || "#modelos",
         backgroundUrl: mediaUrl(f.backgroundMedia),
         backgroundIsVideo: isVideo(f.backgroundMedia),
+        // Optional poster image (asset) shown while the video downloads.
+        // Accepts camelCase or lowercase Contentful IDs. If empty, the
+        // <video> element falls back to a dark brand color instead of black.
+        posterUrl: mediaUrl(f.posterMedia) || mediaUrl(f.postermedia) || "",
       };
     });
   } catch (err) {
@@ -195,6 +199,10 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       sideImage: f.sideImage || null,
       heroImage: mediaUrl(f.heroImage),
       heroIsVideo: isVideo(f.heroImage),
+      // Optional poster image shown while the hero video downloads.
+      // Accepts camelCase or lowercase Contentful IDs. Falls back to a dark
+      // brand color on the <video> element when unset.
+      heroPoster: mediaUrl(f.heroPoster) || mediaUrl(f.heroposter) || "",
       lengthMm: f.lengthMm || 0,
       widthMm: f.widthMm || 0,
       heightMm: f.heightMm || 0,

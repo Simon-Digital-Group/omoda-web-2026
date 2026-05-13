@@ -1,17 +1,43 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { fadeInUp, staggerContainer } from "@/lib/motion";
 import { VEHICLE_MODELS, SITE_CONFIG } from "@/lib/data";
 
 type FormStatus = "idle" | "submitting" | "success" | "error";
 
+// Small replacement for framer-motion's useInView. Fires once when the
+// element enters the viewport, then disconnects. Avoids hydrating the
+// ~20KB framer-motion runtime just for an entry animation.
+function useInViewOnce<T extends Element>(rootMargin = "-100px"): [React.RefObject<T>, boolean] {
+  const ref = useRef<T>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Reduced-motion users see the content immediately, no fade.
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      setInView(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [rootMargin]);
+  return [ref, inView];
+}
+
 export default function ContactForm() {
-  const ref = useRef<HTMLElement>(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const [ref, isInView] = useInViewOnce<HTMLElement>("-100px");
   const mountedAt = useRef(Date.now());
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -77,15 +103,21 @@ export default function ContactForm() {
     }
   };
 
+  // Single fade-up on first intersection. Children inherit the transition
+  // via the parent state instead of running per-child stagger animations.
+  const reveal = isInView
+    ? "opacity-100 translate-y-0"
+    : "opacity-0 translate-y-6";
+
   return (
     <section ref={ref} id="contacto" className="section-padding relative border-t border-white/[0.06]">
-      <motion.div
-        variants={staggerContainer}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        className="relative container-custom"
+      <div
+        className={cn(
+          "relative container-custom transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none",
+          reveal,
+        )}
       >
-        <motion.div variants={fadeInUp} className="mb-16 max-w-xl">
+        <div className="mb-16 max-w-xl">
           <h2 className="text-section font-michroma font-bold text-white mb-4">
             Test Drive
           </h2>
@@ -93,11 +125,10 @@ export default function ContactForm() {
             Dejanos tus datos y un asesor se comunicará contigo para coordinar
             una experiencia de manejo personalizada.
           </p>
-        </motion.div>
+        </div>
 
         <div className="grid lg:grid-cols-5 gap-12">
-          <motion.form
-            variants={fadeInUp}
+          <form
             onSubmit={handleSubmit}
             className="lg:col-span-3 glass p-5 sm:p-8 md:p-10"
             noValidate
@@ -216,9 +247,9 @@ export default function ContactForm() {
                 </p>
               )}
             </div>
-          </motion.form>
+          </form>
 
-          <motion.div variants={fadeInUp} className="lg:col-span-2 flex flex-col gap-6">
+          <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="glass p-4 sm:p-6">
               <h3 className="text-sm font-semibold text-white mb-1">Teléfono</h3>
               <p className="text-sm text-text-secondary">
@@ -242,9 +273,9 @@ export default function ContactForm() {
                 </a>
               </p>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

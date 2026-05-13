@@ -18,7 +18,9 @@ import ModelSEOContent from "@/components/model-page/ModelSEOContent";
 import { getModelFaqs, faqsJsonLd } from "@/lib/model-faqs";
 import { getSeoContent } from "@/lib/model-seo-content";
 
-export const revalidate = 60;
+// ISR window: 5 min. Model pages are stable; cuts 2 Contentful fetches per
+// request and improves TTFB for mobile users on slower networks.
+export const revalidate = 300;
 
 interface PageProps {
   params: { slug: string };
@@ -119,6 +121,7 @@ export default async function ModelPage({ params }: PageProps) {
         description={pick(cms?.description, s?.heroDescription || "")}
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
         heroIsVideo={cms?.heroIsVideo}
+        heroPoster={cms?.heroPoster}
         price={pick(cms?.price, s?.price || "")}
         primaryCtaLabel={cms?.ctaLabel}
       />
