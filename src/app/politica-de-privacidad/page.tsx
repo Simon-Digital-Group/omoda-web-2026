@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { getVehicleModels } from "@/lib/contentful";
 
 export const metadata: Metadata = {
   title: "Política de Privacidad",
@@ -10,10 +11,14 @@ export const metadata: Metadata = {
   robots: { index: true, follow: true },
 };
 
-export default function PoliticaDePrivacidadPage() {
+export const revalidate = 60;
+
+export default async function PoliticaDePrivacidadPage() {
+  const cmsModels = await getVehicleModels();
+
   return (
     <main id="main-content" className="min-h-screen">
-      <Navbar />
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
 
       <section className="pt-40 pb-20 md:pt-48 md:pb-28">
         <div className="container-custom max-w-3xl">

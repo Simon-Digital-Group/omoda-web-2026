@@ -151,21 +151,25 @@ export default async function ModelPage({ params }: PageProps) {
         brand={brand}
       />
 
-      <ModelFeatureGrid
-        id="tecnologia"
-        sectionLabel="Tecnología"
-        heading="Innovación que"
-        headingAccent="conecta"
-        features={pick(cms?.technologyFeatures, s?.technologyFeatures || [])}
-      />
+      {params.slug !== "omoda52027" && (
+        <>
+          <ModelFeatureGrid
+            id="tecnologia"
+            sectionLabel="Tecnología"
+            heading="Innovación que"
+            headingAccent="conecta"
+            features={pick(cms?.technologyFeatures, s?.technologyFeatures || [])}
+          />
 
-      <ModelFeatureGrid
-        id="seguridad"
-        sectionLabel="Seguridad"
-        heading="Seguridad de"
-        headingAccent="vanguardia"
-        features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
-      />
+          <ModelFeatureGrid
+            id="seguridad"
+            sectionLabel="Seguridad"
+            heading="Seguridad de"
+            headingAccent="vanguardia"
+            features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
+          />
+        </>
+      )}
 
       <ModelSpecs
         specs={pick(cms?.specs, s?.specs || [])}

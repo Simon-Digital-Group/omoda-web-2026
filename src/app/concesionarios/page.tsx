@@ -3,7 +3,7 @@ import { Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
-import { getNetworkLocations } from "@/lib/contentful";
+import { getNetworkLocations, getVehicleModels } from "@/lib/contentful";
 import { SITE_CONFIG } from "@/lib/data";
 import { networkLocationsSchema, breadcrumbSchema, safeJsonLd } from "@/lib/schema";
 
@@ -18,14 +18,17 @@ export const metadata: Metadata = {
 export const revalidate = 60;
 
 export default async function ConcesionariosPage() {
-  const concesionarios = await getNetworkLocations("concesionario");
+  const [concesionarios, cmsModels] = await Promise.all([
+    getNetworkLocations("concesionario"),
+    getVehicleModels(),
+  ]);
   const departments = Array.from(
     new Set(concesionarios.map((c) => c.department))
   ).sort();
 
   return (
     <main id="main-content" className="min-h-screen">
-      <Navbar />
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
 
       {/* Hero */}
       <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
