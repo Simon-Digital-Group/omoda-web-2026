@@ -60,9 +60,39 @@ function hasValidPreviewSecret(req: NextRequest): boolean {
 // Main middleware
 // ---------------------------------------------------------------------------
 
+// ---------------------------------------------------------------------------
+// Subdomain rewrite (entrega.*)
+// ---------------------------------------------------------------------------
+
+// The vehicle delivery form lives at /entrega but is served from its own
+// subdomain. Rewriting here keeps a single Next.js deployment while exposing
+// the form on entrega.<root>.
+function isEntregaSubdomain(host: string): boolean {
+  const hostname = host.split(":")[0].toLowerCase();
+  return (
+    hostname === "entrega.omodajaecoo.com.uy" ||
+    hostname.startsWith("entrega.localhost")
+  );
+}
+
+function shouldSkipRewrite(pathname: string): boolean {
+  return (
+    pathname.startsWith("/api/") ||
+    pathname.startsWith("/_next/") ||
+    pathname === "/favicon.ico" ||
+    pathname.startsWith("/fonts/") ||
+    pathname.startsWith("/images/")
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main middleware
+// ---------------------------------------------------------------------------
+
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const ua = request.headers.get("user-agent") || "";
+  const host = request.headers.get("host") || "";
 
   // SECURITY: Block known bad bots from reaching any route, especially /api/contact.
   if (isKnownBadBot(ua)) {
@@ -76,15 +106,24 @@ export function middleware(request: NextRequest) {
     }
   }
 
+  // Subdomain rewrite: entrega.* → /entrega. Skipped for API/static so the
+  // form's POST to /api/entrega and asset requests still resolve normally.
+  if (isEntregaSubdomain(host) && !shouldSkipRewrite(pathname)) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname === "/" ? "/entrega" : `/entrega${pathname}`;
+    return NextResponse.rewrite(url);
+  }
+
   // Pass the request through; clone response to add any extra headers if needed.
   return NextResponse.next();
 }
 
-// SECURITY: Matcher — run middleware on API routes and preview paths only.
-// Excluding static files and Next.js internals keeps edge latency minimal.
+// SECURITY: Matcher — run middleware on every route except Next.js internals
+// and obvious static assets. We need page-level coverage so the subdomain
+// rewrite for entrega.* can intercept `/`, while still keeping edge latency
+// minimal by excluding _next/static, _next/image and favicon.
 export const config = {
   matcher: [
-    "/api/:path*",
-    "/preview/:path*",
+    "/((?!_next/static|_next/image|favicon.ico).*)",
   ],
 };
