@@ -88,6 +88,19 @@ export const getHeroBanners = cache(async function getHeroBanners() {
         ctaLink: sanitizeCmsUrl(f.ctaLink) || "#modelos",
         backgroundUrl: mediaUrl(f.backgroundMedia),
         backgroundIsVideo: isVideo(f.backgroundMedia),
+        // Optional mobile-specific background. When set, the Hero shows this
+        // asset below the md breakpoint and `backgroundMedia` from md up. When
+        // empty, the desktop asset is used at every width (back-compat with
+        // banners created before this field existed). Accepts camelCase or
+        // lowercase Contentful IDs.
+        backgroundUrlMobile:
+          mediaUrl(f.backgroundMediaMobile) || mediaUrl(f.backgroundmediamobile) || "",
+        backgroundIsVideoMobile:
+          isVideo(f.backgroundMediaMobile) || isVideo(f.backgroundmediamobile),
+        // Optional poster image (asset) shown while the video downloads.
+        // Accepts camelCase or lowercase Contentful IDs. If empty, the
+        // <video> element falls back to a dark brand color instead of black.
+        posterUrl: mediaUrl(f.posterMedia) || mediaUrl(f.postermedia) || "",
       };
     });
   } catch (err) {
