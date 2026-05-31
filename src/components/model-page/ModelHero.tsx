@@ -57,7 +57,7 @@ function HeroVideo({
       preload="auto"
       poster={posterUrl || undefined}
       aria-label={title}
-      className={`w-full h-full object-cover ${className || ""}`}
+      className={`absolute inset-0 w-full h-full object-cover ${className || ""}`}
       style={{ backgroundColor: "#0a1628" }}
     >
       {/* Omit `type` when the real MIME is unknown — declaring the wrong type
@@ -171,8 +171,10 @@ export default function ModelHero({
     <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
       {/* Background — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        {/* Fallback gradient (visible while loading or if no image) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+        {/* Fallback gradient (visible while loading or if no image). MUST sit
+            BEHIND the media (-z-10) — without it the opaque gradient paints on
+            top of the (non-positioned) <video> and the hero looks black. */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
 
         {hasMobileBg ? (
           <>
