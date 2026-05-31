@@ -12,6 +12,9 @@ interface HeroBanner {
   ctaLink: string;
   backgroundUrl: string;
   backgroundIsVideo: boolean;
+  /** Optional mobile-specific background. Falls back to backgroundUrl when empty. */
+  backgroundUrlMobile?: string;
+  backgroundIsVideoMobile?: boolean;
   /** Optional poster image shown while the video loads (mobile 4G can take 2-4s) */
   posterUrl?: string;
 }
@@ -30,6 +33,63 @@ const DEFAULT_BANNER: HeroBanner = {
 };
 
 const INTERVAL_MS = 6000;
+
+/**
+ * Renders a single hero background (image or video). Extracted so the mobile
+ * and desktop variants share identical markup and only differ in source.
+ */
+function BackgroundMedia({
+  url,
+  isVideo,
+  posterUrl,
+  title,
+  priority,
+  className,
+}: {
+  url: string;
+  isVideo: boolean;
+  posterUrl?: string;
+  title: string;
+  priority: boolean;
+  className?: string;
+}) {
+  if (!url) {
+    return (
+      <div
+        className={`w-full h-full bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] ${className || ""}`}
+      />
+    );
+  }
+  if (isVideo) {
+    return (
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={posterUrl || undefined}
+        aria-label={title}
+        className={`w-full h-full object-cover ${className || ""}`}
+        style={{ backgroundColor: "#0a1628" }}
+      >
+        <source src={url} type="video/mp4" />
+      </video>
+    );
+  }
+  return (
+    <OptimizedImage
+      src={url}
+      alt={title}
+      preset="hero"
+      fill
+      objectFit="cover"
+      priority={priority}
+      sizes="100vw"
+      className={className}
+    />
+  );
+}
 
 export default function Hero({ banners }: HeroProps) {
   const slides = banners && banners.length > 0 ? banners : [DEFAULT_BANNER];
@@ -52,6 +112,14 @@ export default function Hero({ banners }: HeroProps) {
 
   const slide = slides[current];
 
+  // Mobile background falls back to the desktop asset when no mobile-specific
+  // one is provided, so older banners keep working unchanged.
+  const hasMobileBg = Boolean(slide.backgroundUrlMobile);
+  const mobileUrl = slide.backgroundUrlMobile || slide.backgroundUrl;
+  const mobileIsVideo = hasMobileBg
+    ? Boolean(slide.backgroundIsVideoMobile)
+    : slide.backgroundIsVideo;
+
   return (
     <section
       id="inicio"
@@ -70,34 +138,35 @@ export default function Hero({ banners }: HeroProps) {
           transition={{ duration: 0.8 }}
           className="absolute inset-0 z-0"
         >
-          {slide.backgroundUrl ? (
-            slide.backgroundIsVideo ? (
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                poster={slide.posterUrl || undefined}
-                aria-label={slide.title}
-                className="w-full h-full object-cover"
-                style={{ backgroundColor: "#0a1628" }}
-              >
-                <source src={slide.backgroundUrl} type="video/mp4" />
-              </video>
-            ) : (
-              <OptimizedImage
-                src={slide.backgroundUrl}
-                alt={slide.title}
-                preset="hero"
-                fill
-                objectFit="cover"
+          {hasMobileBg ? (
+            <>
+              {/* Mobile background (below md). Falls back to desktop asset above. */}
+              <BackgroundMedia
+                url={mobileUrl}
+                isVideo={mobileIsVideo}
+                posterUrl={slide.posterUrl}
+                title={slide.title}
                 priority={current === 0}
-                sizes="100vw"
+                className="md:hidden"
               />
-            )
+              {/* Desktop background (md and up). */}
+              <BackgroundMedia
+                url={slide.backgroundUrl}
+                isVideo={slide.backgroundIsVideo}
+                posterUrl={slide.posterUrl}
+                title={slide.title}
+                priority={current === 0}
+                className="hidden md:block"
+              />
+            </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+            <BackgroundMedia
+              url={slide.backgroundUrl}
+              isVideo={slide.backgroundIsVideo}
+              posterUrl={slide.posterUrl}
+              title={slide.title}
+              priority={current === 0}
+            />
           )}
         </motion.div>
       </AnimatePresence>
