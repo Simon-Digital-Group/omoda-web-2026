@@ -60,6 +60,8 @@ export interface ModelPageData {
   tagline: string;
   heroDescription: string;
   heroImage: string;
+  /** Optional mobile-specific hero. Falls back to heroImage when empty. */
+  heroImageMobile?: string;
 
   // Key stats — displayed prominently below hero (OMODA UK style)
   keyStats: KeyStat[];

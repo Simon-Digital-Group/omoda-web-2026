@@ -119,6 +119,8 @@ export default async function ModelPage({ params }: PageProps) {
         description={pick(cms?.description, s?.heroDescription || "")}
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
         heroIsVideo={cms?.heroIsVideo}
+        heroImageMobile={pick(cms?.heroImageMobile, s?.heroImageMobile || "")}
+        heroIsVideoMobile={cms?.heroIsVideoMobile}
         price={pick(cms?.price, s?.price || "")}
         primaryCtaLabel={cms?.ctaLabel}
       />

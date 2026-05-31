@@ -208,6 +208,14 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       sideImage: f.sideImage || null,
       heroImage: mediaUrl(f.heroImage),
       heroIsVideo: isVideo(f.heroImage),
+      // Optional mobile-specific hero. When set, the ModelHero shows this asset
+      // below the md breakpoint and `heroImage` from md up. When empty, the
+      // desktop asset is used at every width (back-compat with models created
+      // before this field existed). Accepts camelCase or lowercase Contentful IDs.
+      heroImageMobile:
+        mediaUrl(f.heroImageMobile) || mediaUrl(f.heroimagemobile) || "",
+      heroIsVideoMobile:
+        isVideo(f.heroImageMobile) || isVideo(f.heroimagemobile),
       lengthMm: f.lengthMm || 0,
       widthMm: f.widthMm || 0,
       heightMm: f.heightMm || 0,

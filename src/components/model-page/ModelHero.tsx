@@ -12,8 +12,59 @@ interface ModelHeroProps {
   description: string;
   heroImage: string;
   heroIsVideo?: boolean;
+  /** Optional mobile-specific hero. Falls back to heroImage when empty. */
+  heroImageMobile?: string;
+  heroIsVideoMobile?: boolean;
   price: string;
   primaryCtaLabel?: string;
+}
+
+/**
+ * Renders a single hero background (image or video). Extracted so the mobile
+ * and desktop variants share identical markup and only differ in source.
+ * Mirrors the BackgroundMedia helper used by the home Hero.
+ */
+function BackgroundMedia({
+  url,
+  isVideo,
+  title,
+  priority,
+  className,
+}: {
+  url: string;
+  isVideo: boolean;
+  title: string;
+  priority: boolean;
+  className?: string;
+}) {
+  if (isVideo) {
+    return (
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        aria-label={title}
+        className={`w-full h-full object-cover ${className || ""}`}
+        style={{ backgroundColor: "#0a1628" }}
+      >
+        <source src={url} type="video/mp4" />
+      </video>
+    );
+  }
+  return (
+    <OptimizedImage
+      src={url}
+      alt={title}
+      preset="hero"
+      fill
+      objectFit="cover"
+      priority={priority}
+      sizes="100vw"
+      className={className}
+    />
+  );
 }
 
 /**
@@ -28,41 +79,54 @@ export default function ModelHero({
   description,
   heroImage,
   heroIsVideo,
+  heroImageMobile,
+  heroIsVideoMobile,
   price,
   primaryCtaLabel,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
+  const title = `${brand} ${name} — ${tagline}`;
+
+  // Mobile background falls back to the desktop asset when no mobile-specific
+  // one is provided, so older models keep working unchanged.
+  const hasMobileBg = Boolean(heroImageMobile);
+  const mobileUrl = heroImageMobile || heroImage;
+  const mobileIsVideo = hasMobileBg ? Boolean(heroIsVideoMobile) : Boolean(heroIsVideo);
 
   return (
     <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
-      {/* Background image — served from Contentful CDN, optimized via next/image */}
+      {/* Background — served from Contentful CDN, optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        {heroIsVideo ? (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            aria-label={`${brand} ${name}`}
-            className="w-full h-full object-cover"
-          >
-            <source src={heroImage} type="video/mp4" />
-          </video>
+        {/* Fallback gradient (visible while loading or if no image) */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+
+        {hasMobileBg ? (
+          <>
+            {/* Mobile background (below md). Falls back to desktop asset above. */}
+            <BackgroundMedia
+              url={mobileUrl}
+              isVideo={mobileIsVideo}
+              title={title}
+              priority
+              className="md:hidden"
+            />
+            {/* Desktop background (md and up). */}
+            <BackgroundMedia
+              url={heroImage}
+              isVideo={Boolean(heroIsVideo)}
+              title={title}
+              priority
+              className="hidden md:block"
+            />
+          </>
         ) : (
-          <OptimizedImage
-            src={heroImage}
-            alt={`${brand} ${name} — ${tagline}`}
-            preset="hero"
-            fill
-            objectFit="cover"
+          <BackgroundMedia
+            url={heroImage}
+            isVideo={Boolean(heroIsVideo)}
+            title={title}
             priority
-            sizes="100vw"
           />
         )}
-        {/* Fallback gradient (visible while loading or if no image) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] -z-10" />
-
       </div>
 
       {/* Overlay gradients */}
