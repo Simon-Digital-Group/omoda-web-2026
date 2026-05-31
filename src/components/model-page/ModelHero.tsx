@@ -1,9 +1,71 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
+
+/**
+ * Hero background video with reliable autoplay on iOS Safari.
+ *
+ * The `autoPlay` attribute alone is unreliable on iOS — Safari frequently
+ * ignores it (especially with preload="metadata", in low-power scenarios, or
+ * when the element mounts before the source is ready). We call play()
+ * explicitly after mount and again on `canplay`/`loadeddata`; since the video
+ * is muted + playsInline this is allowed by the autoplay policy. `preload="auto"`
+ * makes the (small, web-optimized) hero buffer enough to start without a tap.
+ */
+function HeroVideo({
+  url,
+  videoType,
+  posterUrl,
+  title,
+  className,
+}: {
+  url: string;
+  videoType?: string;
+  posterUrl?: string;
+  title: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    tryPlay();
+    v.addEventListener("loadeddata", tryPlay);
+    v.addEventListener("canplay", tryPlay);
+    return () => {
+      v.removeEventListener("loadeddata", tryPlay);
+      v.removeEventListener("canplay", tryPlay);
+    };
+  }, [url]);
+
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={posterUrl || undefined}
+      aria-label={title}
+      className={`w-full h-full object-cover ${className || ""}`}
+      style={{ backgroundColor: "#0a1628" }}
+    >
+      {/* Omit `type` when the real MIME is unknown — declaring the wrong type
+          (e.g. video/mp4 for a QuickTime file) can make Safari refuse it. */}
+      <source src={url} type={videoType || undefined} />
+    </video>
+  );
+}
 
 interface ModelHeroProps {
   name: string;
@@ -12,9 +74,15 @@ interface ModelHeroProps {
   description: string;
   heroImage: string;
   heroIsVideo?: boolean;
+  /** Real MIME type of the desktop hero asset (e.g. "video/mp4"). */
+  heroVideoType?: string;
   /** Optional mobile-specific hero. Falls back to heroImage when empty. */
   heroImageMobile?: string;
   heroIsVideoMobile?: boolean;
+  heroVideoTypeMobile?: string;
+  /** Optional poster images shown while a hero video buffers. */
+  heroPoster?: string;
+  heroPosterMobile?: string;
   price: string;
   primaryCtaLabel?: string;
 }
@@ -27,30 +95,29 @@ interface ModelHeroProps {
 function BackgroundMedia({
   url,
   isVideo,
+  videoType,
+  posterUrl,
   title,
   priority,
   className,
 }: {
   url: string;
   isVideo: boolean;
+  videoType?: string;
+  posterUrl?: string;
   title: string;
   priority: boolean;
   className?: string;
 }) {
   if (isVideo) {
     return (
-      <video
-        autoPlay
-        muted
-        loop
-        playsInline
-        preload="metadata"
-        aria-label={title}
-        className={`w-full h-full object-cover ${className || ""}`}
-        style={{ backgroundColor: "#0a1628" }}
-      >
-        <source src={url} type="video/mp4" />
-      </video>
+      <HeroVideo
+        url={url}
+        videoType={videoType}
+        posterUrl={posterUrl}
+        title={title}
+        className={className}
+      />
     );
   }
   return (
@@ -79,8 +146,12 @@ export default function ModelHero({
   description,
   heroImage,
   heroIsVideo,
+  heroVideoType,
   heroImageMobile,
   heroIsVideoMobile,
+  heroVideoTypeMobile,
+  heroPoster,
+  heroPosterMobile,
   price,
   primaryCtaLabel,
 }: ModelHeroProps) {
@@ -88,10 +159,13 @@ export default function ModelHero({
   const title = `${brand} ${name} — ${tagline}`;
 
   // Mobile background falls back to the desktop asset when no mobile-specific
-  // one is provided, so older models keep working unchanged.
+  // one is provided, so older models keep working unchanged. Type and poster
+  // follow the same fallback so they always match the asset being shown.
   const hasMobileBg = Boolean(heroImageMobile);
   const mobileUrl = heroImageMobile || heroImage;
   const mobileIsVideo = hasMobileBg ? Boolean(heroIsVideoMobile) : Boolean(heroIsVideo);
+  const mobileVideoType = hasMobileBg ? heroVideoTypeMobile : heroVideoType;
+  const mobilePoster = heroPosterMobile || heroPoster;
 
   return (
     <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
@@ -106,6 +180,8 @@ export default function ModelHero({
             <BackgroundMedia
               url={mobileUrl}
               isVideo={mobileIsVideo}
+              videoType={mobileVideoType}
+              posterUrl={mobilePoster}
               title={title}
               priority
               className="md:hidden"
@@ -114,6 +190,8 @@ export default function ModelHero({
             <BackgroundMedia
               url={heroImage}
               isVideo={Boolean(heroIsVideo)}
+              videoType={heroVideoType}
+              posterUrl={heroPoster}
               title={title}
               priority
               className="hidden md:block"
@@ -123,6 +201,8 @@ export default function ModelHero({
           <BackgroundMedia
             url={heroImage}
             isVideo={Boolean(heroIsVideo)}
+            videoType={heroVideoType}
+            posterUrl={heroPoster}
             title={title}
             priority
           />

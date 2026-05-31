@@ -119,8 +119,12 @@ export default async function ModelPage({ params }: PageProps) {
         description={pick(cms?.description, s?.heroDescription || "")}
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
         heroIsVideo={cms?.heroIsVideo}
+        heroVideoType={cms?.heroVideoType}
         heroImageMobile={pick(cms?.heroImageMobile, s?.heroImageMobile || "")}
         heroIsVideoMobile={cms?.heroIsVideoMobile}
+        heroVideoTypeMobile={cms?.heroVideoTypeMobile}
+        heroPoster={pick(cms?.heroPoster, s?.heroPoster || "")}
+        heroPosterMobile={pick(cms?.heroPosterMobile, s?.heroPosterMobile || "")}
         price={pick(cms?.price, s?.price || "")}
         primaryCtaLabel={cms?.ctaLabel}
       />

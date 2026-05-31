@@ -68,6 +68,16 @@ function isVideo(field: any): boolean {
 }
 
 /**
+ * Real MIME type of a Contentful media asset (e.g. "video/mp4",
+ * "video/quicktime"). Used so the <source type> reflects the actual file
+ * instead of a hardcoded guess — declaring the wrong type can make Safari
+ * refuse to play an otherwise-decodable asset.
+ */
+function mediaType(field: any): string {
+  return field?.fields?.file?.contentType || "";
+}
+
+/**
  * Fetch all hero banners (for rotating carousel on homepage)
  */
 export const getHeroBanners = cache(async function getHeroBanners() {
@@ -208,6 +218,8 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
       sideImage: f.sideImage || null,
       heroImage: mediaUrl(f.heroImage),
       heroIsVideo: isVideo(f.heroImage),
+      // Real MIME type of the hero asset, so the <source type> is accurate.
+      heroVideoType: mediaType(f.heroImage),
       // Optional mobile-specific hero. When set, the ModelHero shows this asset
       // below the md breakpoint and `heroImage` from md up. When empty, the
       // desktop asset is used at every width (back-compat with models created
@@ -216,6 +228,14 @@ export const getVehicleModelBySlug = cache(async function getVehicleModelBySlug(
         mediaUrl(f.heroImageMobile) || mediaUrl(f.heroimagemobile) || "",
       heroIsVideoMobile:
         isVideo(f.heroImageMobile) || isVideo(f.heroimagemobile),
+      heroVideoTypeMobile:
+        mediaType(f.heroImageMobile) || mediaType(f.heroimagemobile),
+      // Optional poster image shown while a (heavy) hero video buffers, so the
+      // hero isn't a blank dark box on slow connections. Separate desktop /
+      // mobile posters; each falls back to empty (then to the gradient).
+      heroPoster: mediaUrl(f.heroPoster) || mediaUrl(f.heroposter) || "",
+      heroPosterMobile:
+        mediaUrl(f.heroPosterMobile) || mediaUrl(f.heropostermobile) || "",
       lengthMm: f.lengthMm || 0,
       widthMm: f.widthMm || 0,
       heightMm: f.heightMm || 0,
