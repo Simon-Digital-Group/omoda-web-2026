@@ -130,10 +130,10 @@ export default async function Footer() {
               </li>
               <li>
                 <a
-                  href={`mailto:${SITE_CONFIG.email}`}
+                  href="mailto:omoda-jaecoo@santarosa.com.uy"
                   className="hover:text-white transition-colors break-all"
                 >
-                  {SITE_CONFIG.email}
+                  omoda-jaecoo@santarosa.com.uy
                 </a>
               </li>
             </ul>

@@ -235,10 +235,10 @@ export default function ContactForm() {
               <h3 className="text-sm font-semibold text-white mb-1">Email</h3>
               <p className="text-sm text-text-secondary">
                 <a
-                  href={`mailto:${SITE_CONFIG.email}`}
+                  href="mailto:omoda-jaecoo@santarosa.com.uy"
                   className="hover:text-white transition-colors break-all"
                 >
-                  {SITE_CONFIG.email}
+                  omoda-jaecoo@santarosa.com.uy
                 </a>
               </p>
             </div>
