@@ -3,7 +3,7 @@ import { Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
-import { getNetworkLocations } from "@/lib/contentful";
+import { getNetworkLocations, getVehicleModels } from "@/lib/contentful";
 import { SITE_CONFIG } from "@/lib/data";
 import { networkLocationsSchema, breadcrumbSchema, safeJsonLd } from "@/lib/schema";
 
@@ -18,14 +18,17 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function ConcesionariosPage() {
-  const concesionarios = await getNetworkLocations("concesionario");
+  const [concesionarios, cmsModels] = await Promise.all([
+    getNetworkLocations("concesionario"),
+    getVehicleModels(),
+  ]);
   const departments = Array.from(
     new Set(concesionarios.map((c) => c.department))
   ).sort();
 
   return (
     <main id="main-content" className="min-h-screen">
-      <Navbar />
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
 
       {/* Hero */}
       <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">
@@ -46,16 +49,18 @@ export default async function ConcesionariosPage() {
           {/* Contact CTA */}
           <div className="flex flex-wrap gap-3">
             <a
-              href="tel:+59899100331"
+              href="tel:+59892001372"
               className="btn-primary"
               data-event="phone_click"
               data-event-location="concesionarios_hero"
             >
               <Phone className="w-4 h-4" />
-              +598 99 100 331
+              +598 92 001 372
             </a>
+            {/* SECURITY: encodeURIComponent prevents CMS-supplied text from injecting
+                 extra URL parameters or escaping the wa.me domain. */}
             <a
-              href={`${SITE_CONFIG.whatsapp}?text=Hola! Me gustaría conocer un concesionario cercano`}
+              href={`${SITE_CONFIG.whatsapp}?text=${encodeURIComponent("Hola! Me gustaría conocer un concesionario cercano")}`}
               target="_blank"
               rel="noopener noreferrer"
               className="btn-outline"
@@ -101,7 +106,7 @@ export default async function ConcesionariosPage() {
                 No hay concesionarios disponibles en este momento.
               </p>
               <p className="text-text-muted text-sm mt-2">
-                Contactanos por WhatsApp o al +598 99 100 331 para más información.
+                Contactanos por WhatsApp o al +598 92 001 372 para más información.
               </p>
             </div>
           )}

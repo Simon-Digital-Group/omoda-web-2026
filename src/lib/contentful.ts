@@ -1,11 +1,18 @@
 import { createClient } from "contentful";
 import { unstable_cache } from "next/cache";
 
+// SECURITY: These env vars must NEVER be prefixed with NEXT_PUBLIC_. They are
+// server-only secrets; the Contentful SDK is only imported in server components
+// and API routes. Verify: grep -r "NEXT_PUBLIC_CONTENTFUL" src/ should return nothing.
 const client = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || "",
   accessToken: process.env.CONTENTFUL_ACCESS_TOKEN || "",
 });
 
+// SECURITY: The preview client uses CONTENTFUL_PREVIEW_TOKEN which has access to
+// unpublished (draft) content. It must only be instantiated server-side and must
+// never be called from a route that isn't protected by the preview secret guard
+// in src/middleware.ts.
 const previewClient = createClient({
   space: process.env.CONTENTFUL_SPACE_ID || "",
   accessToken: process.env.CONTENTFUL_PREVIEW_TOKEN || "",
@@ -13,7 +20,36 @@ const previewClient = createClient({
 });
 
 export function getClient(preview = false) {
+  // SECURITY: Extra runtime guard — if preview is requested but no preview token
+  // is configured, fall back to the public client rather than erroring with an
+  // unhelpful message or leaking that the feature exists.
+  if (preview && !process.env.CONTENTFUL_PREVIEW_TOKEN) {
+    console.warn("[contentful] Preview requested but CONTENTFUL_PREVIEW_TOKEN is not set; falling back to public client.");
+    return client;
+  }
   return preview ? previewClient : client;
+}
+
+// SECURITY: Sanitize any URL that comes from Contentful CMS fields before use
+// in href attributes. Accepts only http/https/tel/mailto schemes and Contentful
+// CDN URLs. Rejects javascript:, data:, vbscript:, and anything else.
+export function sanitizeCmsUrl(raw: string | undefined | null): string {
+  if (!raw || typeof raw !== "string") return "";
+  const trimmed = raw.trim();
+  // Allow safe schemes and Contentful CDN paths
+  if (
+    trimmed.startsWith("https://") ||
+    trimmed.startsWith("http://") ||
+    trimmed.startsWith("tel:") ||
+    trimmed.startsWith("mailto:") ||
+    trimmed.startsWith("/") ||
+    trimmed.startsWith("#")
+  ) {
+    return trimmed;
+  }
+  // Block everything else (javascript:, data:, vbscript:, etc.)
+  console.warn("[contentful] sanitizeCmsUrl: rejected URL scheme:", trimmed.slice(0, 40));
+  return "";
 }
 
 /**
@@ -24,7 +60,7 @@ export function getClient(preview = false) {
  * page) re-hits the Contentful API on regeneration. `unstable_cache` persists
  * the *resolved* result in the Data Cache so identical queries (e.g. the nav
  * models, site settings) are shared across routes and only refetched once the
- * window elapses. Matches the page-level `export const revalidate = 60`.
+ * window elapses. Matches the page-level `export const revalidate = 3600`.
  *
  * Every entry is tagged "contentful" so a webhook can revalidate the whole CMS
  * layer with `revalidateTag("contentful")` on publish.
@@ -48,6 +84,16 @@ function isVideo(field: any): boolean {
 }
 
 /**
+ * Real MIME type of a Contentful media asset (e.g. "video/mp4",
+ * "video/quicktime"). Used so the <source type> reflects the actual file
+ * instead of a hardcoded guess — declaring the wrong type can make Safari
+ * refuse to play an otherwise-decodable asset.
+ */
+function mediaType(field: any): string {
+  return field?.fields?.file?.contentType || "";
+}
+
+/**
  * Fetch all hero banners (for rotating carousel on homepage)
  */
 export const getHeroBanners = unstable_cache(
@@ -65,10 +111,18 @@ export const getHeroBanners = unstable_cache(
           title: f.title || "",
           subtitle: f.subtitle || "",
           ctaText: f.ctaText || "Explorar Modelos",
-          ctaLink: f.ctaLink || "#modelos",
-          // backgroundMedia is now the poster image (legacy: could still be a video asset).
+          // SECURITY: sanitize CMS-supplied link before rendering into href
+          ctaLink: sanitizeCmsUrl(f.ctaLink) || "#modelos",
+          // backgroundMedia is the poster image (legacy: could still be a video asset).
           backgroundUrl: mediaUrl(f.backgroundMedia),
           backgroundIsVideo: isVideo(f.backgroundMedia),
+          // Optional mobile-specific background asset (legacy Contentful-hosted path).
+          backgroundUrlMobile:
+            mediaUrl(f.backgroundMediaMobile) || mediaUrl(f.backgroundmediamobile) || "",
+          backgroundIsVideoMobile:
+            isVideo(f.backgroundMediaMobile) || isVideo(f.backgroundmediamobile),
+          // Optional poster image (asset) shown while the video downloads.
+          posterUrl: mediaUrl(f.posterMedia) || mediaUrl(f.postermedia) || "",
           // External video hosted on a CDN (e.g. Vercel Blob). Preferred over the
           // Contentful asset to keep video off Contentful's asset bandwidth.
           videoUrl: (f.backgroundVideoUrl || "").trim(),
@@ -76,7 +130,10 @@ export const getHeroBanners = unstable_cache(
           videoUrlMobile: (f.backgroundVideoUrlMobile || "").trim(),
         };
       });
-    } catch {
+    } catch (err) {
+      // SECURITY: Log errors so Contentful outages are visible in logs, but never
+      // expose error details to the client — return safe empty fallback instead.
+      console.error("[contentful] getHeroBanners failed:", (err as Error)?.message);
       return [];
     }
   },
@@ -137,7 +194,8 @@ export const getVehicleModels = unstable_cache(
       } as any);
 
       return entries.items.map((item) => mapListModel(item.fields));
-    } catch {
+    } catch (err) {
+      console.error("[contentful] getVehicleModels failed:", (err as Error)?.message);
       return [];
     }
   },
@@ -161,7 +219,8 @@ export const getNavModels = unstable_cache(
       } as any);
 
       return entries.items.map((item) => mapListModel(item.fields));
-    } catch {
+    } catch (err) {
+      console.error("[contentful] getNavModels failed:", (err as Error)?.message);
       return [];
     }
   },
@@ -222,14 +281,27 @@ export const getVehicleModelBySlug = unstable_cache(
         tagline: f.tagline || "",
         description: f.description || "",
         sideImage: f.sideImage || null,
-        // heroImage is now the poster image (legacy: could still be a video asset).
+        // heroImage is the poster image (legacy: could still be a video asset).
         heroImage: mediaUrl(f.heroImage),
         heroIsVideo: isVideo(f.heroImage),
+        // Real MIME type of the legacy hero asset, so a <source type> is accurate.
+        heroVideoType: mediaType(f.heroImage),
         // External video hosted on a CDN (e.g. Vercel Blob). Preferred over the
         // Contentful asset to keep video off Contentful's asset bandwidth.
         heroVideoUrl: (f.heroVideoUrl || "").trim(),
-        // Optional mobile-specific video; falls back to heroVideoUrl when empty.
+        // Optional mobile-specific CDN video; falls back to heroVideoUrl when empty.
         heroVideoUrlMobile: (f.heroVideoUrlMobile || "").trim(),
+        // Optional mobile-specific legacy hero asset (Contentful-hosted fallback).
+        heroImageMobile:
+          mediaUrl(f.heroImageMobile) || mediaUrl(f.heroimagemobile) || "",
+        heroIsVideoMobile:
+          isVideo(f.heroImageMobile) || isVideo(f.heroimagemobile),
+        heroVideoTypeMobile:
+          mediaType(f.heroImageMobile) || mediaType(f.heroimagemobile),
+        // Optional poster images shown while a hero video buffers.
+        heroPoster: mediaUrl(f.heroPoster) || mediaUrl(f.heroposter) || "",
+        heroPosterMobile:
+          mediaUrl(f.heroPosterMobile) || mediaUrl(f.heropostermobile) || "",
         lengthMm: f.lengthMm || 0,
         widthMm: f.widthMm || 0,
         heightMm: f.heightMm || 0,
@@ -271,25 +343,51 @@ export const getVehicleModelBySlug = unstable_cache(
         interiorImages: mediaUrls(f.iMg2daSeccin) || mediaUrls(f.interiorImages),
         interiorHighlights: parseHighlights(f.highligh2daSeccin || f.interiorHighlights),
 
-        // Technology Features (field may be techFeatures or technologyFeatures)
-        technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => ({
-          icon: feat.icon || "Star",
-          title: feat.title || "",
-          description: feat.description || "",
-        })),
+        // Technology Features (field may be techFeatures or technologyFeatures).
+        // Each feature entry can include an optional `image` media reference — when
+        // present it is rendered at the top of the card. Until uploaded, the card
+        // gracefully falls back to title + description only.
+        technologyFeatures: resolveRefs(f.techFeatures || f.technologyFeatures).map((feat: any) => {
+          const img = mediaUrl(feat.image);
+          return {
+            icon: feat.icon || "Star",
+            title: feat.title || "",
+            description: feat.description || "",
+            ...(img ? { image: img } : {}),
+          };
+        }),
 
         // Safety Features (field may be safetyFeatures or safeFeatures)
-        safetyFeatures: resolveRefs(f.safaetyFeatures || f.safetyFeatures || f.safeFeatures).map((feat: any) => ({
-          icon: feat.icon || "Shield",
-          title: feat.title || "",
-          description: feat.description || "",
-        })),
+        safetyFeatures: resolveRefs(f.safaetyFeatures || f.safetyFeatures || f.safeFeatures).map((feat: any) => {
+          const img = mediaUrl(feat.image);
+          return {
+            icon: feat.icon || "Shield",
+            title: feat.title || "",
+            description: feat.description || "",
+            ...(img ? { image: img } : {}),
+          };
+        }),
 
-        // Specs (referenced specGroup entries)
-        specs: resolveRefs(f.specs).map((group: any) => ({
-          category: group.category || "",
-          items: Array.isArray(group.items) ? group.items : [],
-        })),
+        // Specs (referenced specGroup entries).
+        // Tolerate two shapes in the JSON `items` field, because editors sometimes
+        // paste the full specGroup JSON (with its own category+items wrapper) into
+        // the items field instead of just the inner array:
+        //   shape A (correct):  items: [ { label, value }, ... ]
+        //   shape B (wrapped):  items: { category, items: [ { label, value }, ... ] }
+        // We unwrap shape B so the page still renders without requiring the editor
+        // to re-paste the JSON. Anything else falls back to an empty list.
+        specs: resolveRefs(f.specs).map((group: any) => {
+          const raw = group.items;
+          const items = Array.isArray(raw)
+            ? raw
+            : Array.isArray(raw?.items)
+              ? raw.items
+              : [];
+          return {
+            category: group.category || raw?.category || "",
+            items,
+          };
+        }),
 
         // Powertrain Options (referenced powertrainOption entries)
         powertrainOptions: resolveRefs(f.powertrainOptions).map((opt: any) => ({
@@ -302,8 +400,44 @@ export const getVehicleModelBySlug = unstable_cache(
           range: opt.range || "",
           transmission: opt.transmission || "",
         })),
+
+        // Optional per-model override for the primary CTA label (Hero + bottom CTA).
+        // Use it to switch a model into states like "Pre venta", "Próximamente",
+        // etc. Empty falls back to the hard-coded "Agendar Test Drive".
+        // Accepts both camelCase and lowercase Contentful IDs.
+        ctaLabel:
+          typeof f.ctaLabel === "string"
+            ? f.ctaLabel
+            : typeof f.ctalabel === "string"
+              ? f.ctalabel
+              : "",
+
+        // SEO long-form content (optional from CMS). seoBody is plain long text;
+        // paragraphs are split on blank lines. Each field falls back to static
+        // copy in src/lib/model-seo-content.ts when empty.
+        // Both camelCase and lowercase IDs are accepted because Contentful's
+        // auto-generated IDs are inconsistent (e.g. seosectionlabel vs seoSectionLabel).
+        seoSectionLabel:
+          typeof f.seoSectionLabel === "string"
+            ? f.seoSectionLabel
+            : typeof f.seosectionlabel === "string"
+              ? f.seosectionlabel
+              : "",
+        seoHeading:
+          typeof f.seoHeading === "string"
+            ? f.seoHeading
+            : typeof f.seoheading === "string"
+              ? f.seoheading
+              : "",
+        seoBody:
+          typeof f.seoBody === "string"
+            ? f.seoBody
+            : typeof f.seobody === "string"
+              ? f.seobody
+              : "",
       };
-    } catch {
+    } catch (err) {
+      console.error("[contentful] getVehicleModelBySlug failed:", (err as Error)?.message);
       return null;
     }
   },
@@ -362,7 +496,8 @@ export const getNetworkLocations = unstable_cache(
             hours: f.hours || undefined,
           };
         });
-    } catch {
+    } catch (err) {
+      console.error("[contentful] getNetworkLocations failed:", (err as Error)?.message);
       return [];
     }
   },
@@ -390,11 +525,14 @@ export const getSiteSettings = unstable_cache(
         phone: f.phone || "",
         email: f.email || "",
         address: f.address || "",
-        instagram: f.instagram || "",
-        facebook: f.facebook || "",
-        whatsapp: f.whatsapp || "",
+        // SECURITY: Social and WhatsApp URLs come from the CMS and are rendered
+        // directly into href attributes — sanitize to allow only safe URL schemes.
+        instagram: sanitizeCmsUrl(f.instagram),
+        facebook: sanitizeCmsUrl(f.facebook),
+        whatsapp: sanitizeCmsUrl(f.whatsapp),
       };
-    } catch {
+    } catch (err) {
+      console.error("[contentful] getSiteSettings failed:", (err as Error)?.message);
       return null;
     }
   },

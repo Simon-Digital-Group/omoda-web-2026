@@ -25,6 +25,8 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
 
   const isOmoda = brand === "OMODA";
 
+  // Guard for CMS models that haven't had colors uploaded yet — render nothing
+  // rather than crashing on undefined activeColor.
   if (!colors || colors.length === 0) return null;
 
   const activeColor = colors[selected] ?? colors[0];
@@ -116,7 +118,7 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
           variants={fadeInUp}
           role="radiogroup"
           aria-label="Colores disponibles"
-          className="flex justify-center items-center gap-3 md:gap-4"
+          className="flex flex-wrap justify-center items-center gap-y-4 gap-x-3 md:gap-x-4 px-4"
         >
           {colors.map((color, i) => (
             <button

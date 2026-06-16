@@ -195,7 +195,7 @@ export default function Navbar({ cmsModels }: NavbarProps) {
                 "flex items-center gap-1 px-2 py-2 rounded-full transition-all duration-500",
                 scrolled
                   ? "bg-transparent border border-transparent"
-                  : "bg-white/[0.04] backdrop-blur-md border border-white/[0.06]"
+                  : "bg-black/25 backdrop-blur-md border border-white/[0.08]"
               )}
             >
               <Link href="/#inicio" className={LINK_CLASS}>

@@ -1,10 +1,72 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
 import { contentfulImageUrl } from "@/lib/image";
+
+/**
+ * Hero background video with reliable autoplay on iOS Safari.
+ *
+ * The `autoPlay` attribute alone is unreliable on iOS — Safari frequently
+ * ignores it (especially with preload="metadata", in low-power scenarios, or
+ * when the element mounts before the source is ready). We call play()
+ * explicitly after mount and again on `canplay`/`loadeddata`; since the video
+ * is muted + playsInline this is allowed by the autoplay policy. `preload="auto"`
+ * makes the (small, web-optimized) hero buffer enough to start without a tap.
+ */
+function HeroVideo({
+  url,
+  videoType,
+  posterUrl,
+  title,
+  className,
+}: {
+  url: string;
+  videoType?: string;
+  posterUrl?: string;
+  title: string;
+  className?: string;
+}) {
+  const ref = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const v = ref.current;
+    if (!v) return;
+    const tryPlay = () => {
+      const p = v.play();
+      if (p && typeof p.catch === "function") p.catch(() => {});
+    };
+    tryPlay();
+    v.addEventListener("loadeddata", tryPlay);
+    v.addEventListener("canplay", tryPlay);
+    return () => {
+      v.removeEventListener("loadeddata", tryPlay);
+      v.removeEventListener("canplay", tryPlay);
+    };
+  }, [url]);
+
+  return (
+    <video
+      ref={ref}
+      autoPlay
+      muted
+      loop
+      playsInline
+      preload="auto"
+      poster={posterUrl || undefined}
+      aria-label={title}
+      className={`absolute inset-0 w-full h-full object-cover ${className || ""}`}
+      style={{ backgroundColor: "#0a1628" }}
+    >
+      {/* Omit `type` when the real MIME is unknown — declaring the wrong type
+          (e.g. video/mp4 for a QuickTime file) can make Safari refuse it. */}
+      <source src={url} type={videoType || undefined} />
+    </video>
+  );
+}
 
 interface ModelHeroProps {
   name: string;
@@ -17,7 +79,64 @@ interface ModelHeroProps {
   heroVideoUrl?: string;
   /** Optional mobile-specific CDN video; falls back to heroVideoUrl. */
   heroVideoUrlMobile?: string;
+  /** Real MIME type of the desktop hero asset (e.g. "video/mp4"). */
+  heroVideoType?: string;
+  /** Optional mobile-specific (legacy Contentful) hero. Falls back to heroImage. */
+  heroImageMobile?: string;
+  heroIsVideoMobile?: boolean;
+  heroVideoTypeMobile?: string;
+  /** Optional poster images shown while a hero video buffers. */
+  heroPoster?: string;
+  heroPosterMobile?: string;
   price: string;
+  primaryCtaLabel?: string;
+}
+
+/**
+ * Renders a single hero background (image or video). Extracted so the mobile
+ * and desktop variants share identical markup and only differ in source.
+ * Mirrors the BackgroundMedia helper used by the home Hero.
+ */
+function BackgroundMedia({
+  url,
+  isVideo,
+  videoType,
+  posterUrl,
+  title,
+  priority,
+  className,
+}: {
+  url: string;
+  isVideo: boolean;
+  videoType?: string;
+  posterUrl?: string;
+  title: string;
+  priority: boolean;
+  className?: string;
+}) {
+  if (isVideo) {
+    return (
+      <HeroVideo
+        url={url}
+        videoType={videoType}
+        posterUrl={posterUrl}
+        title={title}
+        className={className}
+      />
+    );
+  }
+  return (
+    <OptimizedImage
+      src={url}
+      alt={title}
+      preset="hero"
+      fill
+      objectFit="cover"
+      priority={priority}
+      sizes="100vw"
+      className={className}
+    />
+  );
 }
 
 /**
@@ -34,53 +153,92 @@ export default function ModelHero({
   heroIsVideo,
   heroVideoUrl,
   heroVideoUrlMobile,
+  heroVideoType,
+  heroImageMobile,
+  heroIsVideoMobile,
+  heroVideoTypeMobile,
+  heroPoster,
+  heroPosterMobile,
   price,
+  primaryCtaLabel,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
+  const title = `${brand} ${name} — ${tagline}`;
 
-  // Prefer the external CDN video; fall back to a legacy Contentful video asset.
-  const videoSrc = heroVideoUrl || (heroIsVideo ? heroImage : "");
-  // Optional mobile-specific source (only meaningful when there's a desktop video).
-  const mobileVideoSrc = videoSrc ? heroVideoUrlMobile : "";
-  // When the video comes from the CDN, heroImage is the poster image.
-  const posterSrc = heroVideoUrl && heroImage
-    ? contentfulImageUrl(heroImage, { width: 1920, format: "webp", quality: 70 })
-    : undefined;
+  // Desktop background: prefer the external CDN (Blob) video, else the legacy
+  // Contentful asset. When the source is a CDN video, heroImage is the poster.
+  const desktopIsVideo = Boolean(heroVideoUrl) || Boolean(heroIsVideo);
+  const desktopUrl = heroVideoUrl || heroImage;
+  const desktopVideoType = heroVideoUrl ? "video/mp4" : heroVideoType;
+  const desktopPoster =
+    heroPoster ||
+    (heroVideoUrl && heroImage
+      ? contentfulImageUrl(heroImage, { width: 1920, format: "webp", quality: 70 })
+      : "");
+
+  // Mobile background: prefer the CDN mobile video, else a legacy mobile asset.
+  // When neither exists, fall back to the desktop background so older models
+  // keep working unchanged.
+  const hasMobileBg = Boolean(heroVideoUrlMobile) || Boolean(heroImageMobile);
+  const mobileUrl = heroVideoUrlMobile || heroImageMobile || desktopUrl;
+  const mobileIsVideo = heroVideoUrlMobile
+    ? true
+    : heroImageMobile
+      ? Boolean(heroIsVideoMobile)
+      : desktopIsVideo;
+  const mobileVideoType = heroVideoUrlMobile
+    ? "video/mp4"
+    : heroImageMobile
+      ? heroVideoTypeMobile
+      : desktopVideoType;
+  const mobilePoster =
+    heroPosterMobile ||
+    (heroVideoUrlMobile && heroImageMobile
+      ? contentfulImageUrl(heroImageMobile, { width: 1080, format: "webp", quality: 70 })
+      : desktopPoster);
 
   return (
     <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
-      {/* Background — CDN video (with poster) or Contentful image optimized via next/image */}
+      {/* Background — CDN (Blob) video or Contentful image, with iOS-reliable autoplay */}
       <div className="absolute inset-0 z-0">
-        {videoSrc ? (
-          <video
-            autoPlay
-            muted
-            loop
-            playsInline
-            preload="metadata"
-            poster={posterSrc}
-            aria-label={`${brand} ${name}`}
-            className="w-full h-full object-cover"
-          >
-            {mobileVideoSrc && (
-              <source media="(max-width: 768px)" src={mobileVideoSrc} type="video/mp4" />
-            )}
-            <source src={videoSrc} type="video/mp4" />
-          </video>
+        {/* Fallback gradient (visible while loading or if no media). MUST sit
+            BEHIND the media (-z-10) — without it the opaque gradient paints on
+            top of the (non-positioned) <video> and the hero looks black. */}
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+
+        {hasMobileBg ? (
+          <>
+            {/* Mobile background (below md). */}
+            <BackgroundMedia
+              url={mobileUrl}
+              isVideo={mobileIsVideo}
+              videoType={mobileVideoType}
+              posterUrl={mobilePoster}
+              title={title}
+              priority
+              className="md:hidden"
+            />
+            {/* Desktop background (md and up). */}
+            <BackgroundMedia
+              url={desktopUrl}
+              isVideo={desktopIsVideo}
+              videoType={desktopVideoType}
+              posterUrl={desktopPoster}
+              title={title}
+              priority
+              className="hidden md:block"
+            />
+          </>
         ) : (
-          <OptimizedImage
-            src={heroImage}
-            alt={`${brand} ${name} — ${tagline}`}
-            preset="hero"
-            fill
-            objectFit="cover"
+          <BackgroundMedia
+            url={desktopUrl}
+            isVideo={desktopIsVideo}
+            videoType={desktopVideoType}
+            posterUrl={desktopPoster}
+            title={title}
             priority
-            sizes="100vw"
           />
         )}
-        {/* Fallback gradient (visible while loading or if no image) */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] -z-10" />
-
       </div>
 
       {/* Overlay gradients */}
@@ -116,7 +274,7 @@ export default function ModelHero({
               data-event-location="model_hero"
               data-event-model={name}
             >
-              Agendar Test Drive
+              {primaryCtaLabel || "Agendar Test Drive"}
             </a>
             <a
               href="#especificaciones"

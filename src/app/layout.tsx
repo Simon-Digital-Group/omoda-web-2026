@@ -5,7 +5,12 @@ import dynamic from "next/dynamic";
 import ReducedMotionProvider from "@/components/ReducedMotionProvider";
 import "./globals.css";
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-T2SRZ76G";
+// SECURITY: GTM_ID is interpolated into an inline <script> block. Sanitize it to
+// only allow the expected GTM-XXXXXXX format so a misconfigured env var cannot
+// inject arbitrary JS. NEXT_PUBLIC_ prefix is intentional here — this value is
+// not a secret (GTM container IDs are visible in page source by design).
+const RAW_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-T2SRZ76G";
+const GTM_ID = /^GTM-[A-Z0-9]+$/.test(RAW_GTM_ID) ? RAW_GTM_ID : "GTM-T2SRZ76G";
 
 // Defer below-the-fold chrome; keeps framer-motion out of the critical path
 const CookieBanner = dynamic(() => import("@/components/CookieBanner"), {
@@ -99,13 +104,6 @@ export const metadata: Metadata = {
     description: "La nueva generación de SUVs premium en Uruguay.",
     images: ["/opengraph-image"],
   },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "any" },
-      { url: "/icon.png", type: "image/png" },
-    ],
-    apple: "/apple-icon.png",
-  },
   manifest: "/manifest.webmanifest",
   formatDetection: { telephone: true, email: true, address: false },
 };
@@ -123,7 +121,7 @@ const autoDealerSchema = {
     "Concesionario oficial OMODA y JAECOO en Uruguay. SUVs premium con tecnología de vanguardia.",
   url: "https://omodajaecoo.com.uy",
   logo: "https://omodajaecoo.com.uy/images/omoda-jaecoo-logo.svg",
-  telephone: "+59899100331",
+  telephone: "+59892001372",
   email: "ventas@omodajaecoo.com.uy",
   brand: [
     { "@type": "Brand", name: "OMODA" },

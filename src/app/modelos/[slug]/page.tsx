@@ -25,6 +25,10 @@ interface PageProps {
 }
 
 export async function generateStaticParams() {
+  // Merge static slugs with CMS-managed slugs so any new model added in
+  // Contentful is prerendered at build time. Falls back gracefully if the CMS
+  // is unreachable during build (still ships the static set). Uses the
+  // lightweight nav query (name/slug/brand only).
   const cmsModels = await getNavModels().catch(() => []);
   const cmsSlugs = cmsModels.map((m) => m.slug).filter(Boolean);
   const all = Array.from(new Set([...ALL_MODEL_SLUGS, ...cmsSlugs]));
@@ -118,7 +122,14 @@ export default async function ModelPage({ params }: PageProps) {
         heroIsVideo={cms?.heroIsVideo}
         heroVideoUrl={cms?.heroVideoUrl}
         heroVideoUrlMobile={cms?.heroVideoUrlMobile}
+        heroVideoType={cms?.heroVideoType}
+        heroImageMobile={pick(cms?.heroImageMobile, s?.heroImageMobile || "")}
+        heroIsVideoMobile={cms?.heroIsVideoMobile}
+        heroVideoTypeMobile={cms?.heroVideoTypeMobile}
+        heroPoster={pick(cms?.heroPoster, s?.heroPoster || "")}
+        heroPosterMobile={pick(cms?.heroPosterMobile, s?.heroPosterMobile || "")}
         price={pick(cms?.price, s?.price || "")}
+        primaryCtaLabel={cms?.ctaLabel}
       />
 
       <ModelKeyStats
@@ -149,28 +160,43 @@ export default async function ModelPage({ params }: PageProps) {
         brand={brand}
       />
 
-      <ModelFeatureGrid
-        id="tecnologia"
-        sectionLabel="Tecnología"
-        heading="Innovación que"
-        headingAccent="conecta"
-        features={pick(cms?.technologyFeatures, s?.technologyFeatures || [])}
-      />
+      {params.slug !== "omoda52027" && (
+        <>
+          <ModelFeatureGrid
+            id="tecnologia"
+            sectionLabel="Tecnología"
+            heading="Innovación que"
+            headingAccent="conecta"
+            features={pick(cms?.technologyFeatures, s?.technologyFeatures || [])}
+          />
 
-      <ModelFeatureGrid
-        id="seguridad"
-        sectionLabel="Seguridad"
-        heading="Seguridad de"
-        headingAccent="vanguardia"
-        features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
-      />
+          <ModelFeatureGrid
+            id="seguridad"
+            sectionLabel="Seguridad"
+            heading="Seguridad de"
+            headingAccent="vanguardia"
+            features={pick(cms?.safetyFeatures, s?.safetyFeatures || [])}
+          />
+        </>
+      )}
 
       <ModelSpecs
         specs={pick(cms?.specs, s?.specs || [])}
         modelName={name}
       />
 
-      <ModelSEOContent content={getSeoContent(params.slug)} />
+      <ModelSEOContent content={(() => {
+        const staticSeo = getSeoContent(params.slug);
+        const cmsParagraphs = (cms?.seoBody || "")
+          .split(/\n\s*\n+/)
+          .map((p: string) => p.trim())
+          .filter(Boolean);
+        const sectionLabel = pick(cms?.seoSectionLabel, staticSeo?.sectionLabel || "");
+        const heading = pick(cms?.seoHeading, staticSeo?.heading || "");
+        const paragraphs = cmsParagraphs.length > 0 ? cmsParagraphs : (staticSeo?.paragraphs || []);
+        if (!sectionLabel && !heading && paragraphs.length === 0) return null;
+        return { sectionLabel, heading, paragraphs };
+      })()} />
 
       <ModelFAQSection
         faqs={getModelFaqs({
@@ -187,6 +213,7 @@ export default async function ModelPage({ params }: PageProps) {
         price={pick(cms?.price, s?.price || "")}
         brand={brand}
         brochureUrl={cms?.brochureUrl}
+        primaryCtaLabel={cms?.ctaLabel}
       />
 
       <Footer />

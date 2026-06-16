@@ -65,7 +65,11 @@ export default function OptimizedImage({
 }: OptimizedImageProps) {
   const [hasError, setHasError] = useState(false);
 
-  // If image errored or src is empty, show placeholder
+  // If image errored or src is missing/empty, show placeholder.
+  // This guard MUST come before any string method on `src` because CMS data
+  // may legitimately omit images (e.g. a new vehicle model created in
+  // Contentful before assets are uploaded), in which case `src` is undefined
+  // at runtime even though the type says string.
   if (hasError || !src) {
     return (
       <div

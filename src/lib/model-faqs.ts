@@ -26,7 +26,7 @@ export function getModelFaqs(m: FaqInput): ModelFAQ[] {
     },
     {
       question: `¿Dónde puedo hacer un test drive del ${m.name}?`,
-      answer: `Podés agendar tu test drive en cualquiera de nuestros concesionarios autorizados en todo Uruguay. Llamanos al +598 99 100 331 o completá el formulario de contacto y un asesor coordina la prueba de manejo.`,
+      answer: `Podés agendar tu test drive en cualquiera de nuestros concesionarios autorizados en todo Uruguay. Llamanos al +598 92 001 372 o completá el formulario de contacto y un asesor coordina la prueba de manejo.`,
     },
     {
       question: `¿Qué garantía tiene el ${m.name}?`,

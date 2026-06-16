@@ -28,6 +28,7 @@ export interface ModelFeature {
   icon: string; // lucide icon name
   title: string;
   description: string;
+  image?: string; // optional image URL — when present, rendered at top of the feature card
 }
 
 export interface SpecGroup {
@@ -59,6 +60,11 @@ export interface ModelPageData {
   tagline: string;
   heroDescription: string;
   heroImage: string;
+  /** Optional mobile-specific hero. Falls back to heroImage when empty. */
+  heroImageMobile?: string;
+  /** Optional poster images shown while a hero video buffers. */
+  heroPoster?: string;
+  heroPosterMobile?: string;
 
   // Key stats — displayed prominently below hero (OMODA UK style)
   keyStats: KeyStat[];

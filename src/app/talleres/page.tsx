@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import NetworkGrid from "@/components/network/NetworkGrid";
-import { getNetworkLocations } from "@/lib/contentful";
+import { getNetworkLocations, getVehicleModels } from "@/lib/contentful";
 import { networkLocationsSchema, breadcrumbSchema, safeJsonLd } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -16,14 +16,17 @@ export const metadata: Metadata = {
 export const revalidate = 3600;
 
 export default async function TalleresPage() {
-  const talleres = await getNetworkLocations("taller");
+  const [talleres, cmsModels] = await Promise.all([
+    getNetworkLocations("taller"),
+    getVehicleModels(),
+  ]);
   const departments = Array.from(
     new Set(talleres.map((t) => t.department))
   ).sort();
 
   return (
     <main id="main-content" className="min-h-screen">
-      <Navbar />
+      <Navbar cmsModels={cmsModels.length > 0 ? cmsModels : undefined} />
 
       {/* Hero */}
       <section className="relative pt-40 pb-20 md:pt-48 md:pb-28 overflow-hidden">

@@ -11,13 +11,14 @@ interface ModelCTAProps {
   price: string;
   brand: "OMODA" | "JAECOO";
   brochureUrl?: string;
+  primaryCtaLabel?: string;
 }
 
 /**
  * Bottom CTA section — drives to test drive booking or WhatsApp chat.
  * Full-width ambient glow, strong visual hierarchy.
  */
-export default function ModelCTA({ modelName, price, brand, brochureUrl }: ModelCTAProps) {
+export default function ModelCTA({ modelName, price, brand, brochureUrl, primaryCtaLabel }: ModelCTAProps) {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -71,7 +72,7 @@ export default function ModelCTA({ modelName, price, brand, brochureUrl }: Model
             data-event-location="model_cta"
             data-event-model={modelName}
           >
-            Agendar Test Drive
+            {primaryCtaLabel || "Agendar Test Drive"}
           </a>
           {brochureUrl && (
             <a

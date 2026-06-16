@@ -17,6 +17,11 @@ interface HeroBanner {
   videoUrl?: string;
   /** Optional mobile-specific CDN video; falls back to videoUrl. */
   videoUrlMobile?: string;
+  /** Optional mobile-specific (legacy) background. Falls back to backgroundUrl. */
+  backgroundUrlMobile?: string;
+  backgroundIsVideoMobile?: boolean;
+  /** Optional poster image shown while the video loads (mobile 4G can take 2-4s) */
+  posterUrl?: string;
 }
 
 interface HeroProps {
@@ -24,7 +29,7 @@ interface HeroProps {
 }
 
 const DEFAULT_BANNER: HeroBanner = {
-  title: "SUVs Premium\nen Uruguay",
+  title: "SUVs Premium\en Uruguay",
   subtitle: "",
   ctaText: "Explorar Modelos",
   ctaLink: "#modelos",
@@ -33,6 +38,63 @@ const DEFAULT_BANNER: HeroBanner = {
 };
 
 const INTERVAL_MS = 6000;
+
+/**
+ * Renders a single hero background (image or video). Extracted so the mobile
+ * and desktop variants share identical markup and only differ in source.
+ */
+function BackgroundMedia({
+  url,
+  isVideo,
+  posterUrl,
+  title,
+  priority,
+  className,
+}: {
+  url: string;
+  isVideo: boolean;
+  posterUrl?: string;
+  title: string;
+  priority: boolean;
+  className?: string;
+}) {
+  if (!url) {
+    return (
+      <div
+        className={`w-full h-full bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628] ${className || ""}`}
+      />
+    );
+  }
+  if (isVideo) {
+    return (
+      <video
+        autoPlay
+        muted
+        loop
+        playsInline
+        preload="metadata"
+        poster={posterUrl || undefined}
+        aria-label={title}
+        className={`w-full h-full object-cover ${className || ""}`}
+        style={{ backgroundColor: "#0a1628" }}
+      >
+        <source src={url} type="video/mp4" />
+      </video>
+    );
+  }
+  return (
+    <OptimizedImage
+      src={url}
+      alt={title}
+      preset="hero"
+      fill
+      objectFit="cover"
+      priority={priority}
+      sizes="100vw"
+      className={className}
+    />
+  );
+}
 
 export default function Hero({ banners }: HeroProps) {
   const slides = banners && banners.length > 0 ? banners : [DEFAULT_BANNER];
@@ -55,13 +117,25 @@ export default function Hero({ banners }: HeroProps) {
 
   const slide = slides[current];
 
-  // Prefer the external CDN video; fall back to a legacy Contentful video asset.
-  const videoSrc = slide.videoUrl || (slide.backgroundIsVideo ? slide.backgroundUrl : "");
-  const mobileVideoSrc = videoSrc ? slide.videoUrlMobile : "";
-  // When the video comes from the CDN, backgroundUrl is the poster image.
-  const posterSrc = slide.videoUrl && slide.backgroundUrl
-    ? contentfulImageUrl(slide.backgroundUrl, { width: 1920, format: "webp", quality: 70 })
-    : undefined;
+  // Desktop background: prefer the external CDN (Blob) video, else the legacy
+  // Contentful asset. When the source is a CDN video, backgroundUrl is the poster.
+  const desktopIsVideo = Boolean(slide.videoUrl) || slide.backgroundIsVideo;
+  const desktopUrl = slide.videoUrl || slide.backgroundUrl;
+  const desktopPoster =
+    slide.posterUrl ||
+    (slide.videoUrl && slide.backgroundUrl
+      ? contentfulImageUrl(slide.backgroundUrl, { width: 1920, format: "webp", quality: 70 })
+      : undefined);
+
+  // Mobile background: prefer the CDN mobile video, else a legacy mobile asset,
+  // else the desktop background (older banners keep working unchanged).
+  const hasMobileBg = Boolean(slide.videoUrlMobile) || Boolean(slide.backgroundUrlMobile);
+  const mobileUrl = slide.videoUrlMobile || slide.backgroundUrlMobile || desktopUrl;
+  const mobileIsVideo = slide.videoUrlMobile
+    ? true
+    : slide.backgroundUrlMobile
+      ? Boolean(slide.backgroundIsVideoMobile)
+      : desktopIsVideo;
 
   return (
     <section
@@ -78,34 +152,35 @@ export default function Hero({ banners }: HeroProps) {
           transition={{ duration: 0.8 }}
           className="absolute inset-0 z-0"
         >
-          {videoSrc ? (
-            <video
-              autoPlay
-              muted
-              loop
-              playsInline
-              preload="metadata"
-              poster={posterSrc}
-              aria-label={slide.title}
-              className="w-full h-full object-cover"
-            >
-              {mobileVideoSrc && (
-                <source media="(max-width: 768px)" src={mobileVideoSrc} type="video/mp4" />
-              )}
-              <source src={videoSrc} type="video/mp4" />
-            </video>
-          ) : slide.backgroundUrl ? (
-            <OptimizedImage
-              src={slide.backgroundUrl}
-              alt={slide.title}
-              preset="hero"
-              fill
-              objectFit="cover"
-              priority={current === 0}
-              sizes="100vw"
-            />
+          {hasMobileBg ? (
+            <>
+              {/* Mobile background (below md). */}
+              <BackgroundMedia
+                url={mobileUrl}
+                isVideo={mobileIsVideo}
+                posterUrl={desktopPoster}
+                title={slide.title}
+                priority={current === 0}
+                className="md:hidden"
+              />
+              {/* Desktop background (md and up). */}
+              <BackgroundMedia
+                url={desktopUrl}
+                isVideo={desktopIsVideo}
+                posterUrl={desktopPoster}
+                title={slide.title}
+                priority={current === 0}
+                className="hidden md:block"
+              />
+            </>
           ) : (
-            <div className="w-full h-full bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
+            <BackgroundMedia
+              url={desktopUrl}
+              isVideo={desktopIsVideo}
+              posterUrl={desktopPoster}
+              title={slide.title}
+              priority={current === 0}
+            />
           )}
         </motion.div>
       </AnimatePresence>
@@ -171,11 +246,10 @@ export default function Hero({ banners }: HeroProps) {
               aria-selected={idx === current}
               aria-current={idx === current ? "true" : undefined}
               aria-label={`Ir al slide ${idx + 1} de ${slides.length}`}
-              className={`h-2.5 rounded-full transition-all duration-300 min-w-[10px] min-h-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${
-                idx === current
+              className={`h-2.5 rounded-full transition-all duration-300 min-w-[10px] min-h-[10px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-background ${idx === current
                   ? "bg-accent w-8"
                   : "w-2.5 bg-white/40 hover:bg-white/70"
-              }`}
+                }`}
             />
           ))}
         </div>
