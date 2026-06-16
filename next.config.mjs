@@ -38,7 +38,7 @@ const nextConfig = {
           "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com",
           "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
           "img-src 'self' data: blob: https://images.ctfassets.net https://www.google-analytics.com https://www.googletagmanager.com",
-          "media-src 'self' https://videos.ctfassets.net https://images.ctfassets.net",
+          "media-src 'self' https://videos.ctfassets.net https://images.ctfassets.net https://*.public.blob.vercel-storage.com",
           "font-src 'self' data: https://fonts.gstatic.com",
           "connect-src 'self' https://cdn.contentful.com https://preview.contentful.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com https://www.googletagmanager.com",
           "frame-src 'self' https://www.googletagmanager.com https://www.youtube.com https://www.youtube-nocookie.com",

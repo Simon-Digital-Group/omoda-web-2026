@@ -21,6 +21,8 @@ export default function ModelKeyStats({ stats, brand }: ModelKeyStatsProps) {
 
   const accentColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
 
+  if (!stats || stats.length === 0) return null;
+
   return (
     <section
       ref={ref}

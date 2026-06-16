@@ -25,7 +25,9 @@ export default function ModelColors({ colors, modelName, brand }: ModelColorsPro
 
   const isOmoda = brand === "OMODA";
 
-  const activeColor = colors[selected];
+  if (!colors || colors.length === 0) return null;
+
+  const activeColor = colors[selected] ?? colors[0];
 
   return (
     <section ref={ref} className="section-padding overflow-hidden">

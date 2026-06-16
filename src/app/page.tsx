@@ -8,7 +8,7 @@ import ContactForm from "@/components/ContactForm";
 import Footer from "@/components/Footer";
 import { getHeroBanners, getVehicleModels } from "@/lib/contentful";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "OMODA | JAECOO Uruguay — SUVs Premium",

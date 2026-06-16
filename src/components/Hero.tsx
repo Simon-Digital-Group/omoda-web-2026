@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
+import { contentfulImageUrl } from "@/lib/image";
 
 interface HeroBanner {
   title: string;
@@ -12,6 +13,10 @@ interface HeroBanner {
   ctaLink: string;
   backgroundUrl: string;
   backgroundIsVideo: boolean;
+  /** External CDN video (Vercel Blob). Preferred over a Contentful video asset. */
+  videoUrl?: string;
+  /** Optional mobile-specific CDN video; falls back to videoUrl. */
+  videoUrlMobile?: string;
 }
 
 interface HeroProps {
@@ -50,6 +55,14 @@ export default function Hero({ banners }: HeroProps) {
 
   const slide = slides[current];
 
+  // Prefer the external CDN video; fall back to a legacy Contentful video asset.
+  const videoSrc = slide.videoUrl || (slide.backgroundIsVideo ? slide.backgroundUrl : "");
+  const mobileVideoSrc = videoSrc ? slide.videoUrlMobile : "";
+  // When the video comes from the CDN, backgroundUrl is the poster image.
+  const posterSrc = slide.videoUrl && slide.backgroundUrl
+    ? contentfulImageUrl(slide.backgroundUrl, { width: 1920, format: "webp", quality: 70 })
+    : undefined;
+
   return (
     <section
       id="inicio"
@@ -65,30 +78,32 @@ export default function Hero({ banners }: HeroProps) {
           transition={{ duration: 0.8 }}
           className="absolute inset-0 z-0"
         >
-          {slide.backgroundUrl ? (
-            slide.backgroundIsVideo ? (
-              <video
-                autoPlay
-                muted
-                loop
-                playsInline
-                preload="metadata"
-                aria-label={slide.title}
-                className="w-full h-full object-cover"
-              >
-                <source src={slide.backgroundUrl} type="video/mp4" />
-              </video>
-            ) : (
-              <OptimizedImage
-                src={slide.backgroundUrl}
-                alt={slide.title}
-                preset="hero"
-                fill
-                objectFit="cover"
-                priority={current === 0}
-                sizes="100vw"
-              />
-            )
+          {videoSrc ? (
+            <video
+              autoPlay
+              muted
+              loop
+              playsInline
+              preload="metadata"
+              poster={posterSrc}
+              aria-label={slide.title}
+              className="w-full h-full object-cover"
+            >
+              {mobileVideoSrc && (
+                <source media="(max-width: 768px)" src={mobileVideoSrc} type="video/mp4" />
+              )}
+              <source src={videoSrc} type="video/mp4" />
+            </video>
+          ) : slide.backgroundUrl ? (
+            <OptimizedImage
+              src={slide.backgroundUrl}
+              alt={slide.title}
+              preset="hero"
+              fill
+              objectFit="cover"
+              priority={current === 0}
+              sizes="100vw"
+            />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-background via-[#0d1117] to-[#0a1628]" />
           )}

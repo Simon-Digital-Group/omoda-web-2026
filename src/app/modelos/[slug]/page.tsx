@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { MODEL_PAGES, ALL_MODEL_SLUGS } from "@/lib/models-data";
-import { getVehicleModelBySlug, getVehicleModels } from "@/lib/contentful";
+import { getVehicleModelBySlug, getNavModels } from "@/lib/contentful";
 
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -18,14 +18,17 @@ import ModelSEOContent from "@/components/model-page/ModelSEOContent";
 import { getModelFaqs, faqsJsonLd } from "@/lib/model-faqs";
 import { getSeoContent } from "@/lib/model-seo-content";
 
-export const revalidate = 60;
+export const revalidate = 3600;
 
 interface PageProps {
   params: { slug: string };
 }
 
-export function generateStaticParams() {
-  return ALL_MODEL_SLUGS.map((slug) => ({ slug }));
+export async function generateStaticParams() {
+  const cmsModels = await getNavModels().catch(() => []);
+  const cmsSlugs = cmsModels.map((m) => m.slug).filter(Boolean);
+  const all = Array.from(new Set([...ALL_MODEL_SLUGS, ...cmsSlugs]));
+  return all.map((slug) => ({ slug }));
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -89,7 +92,7 @@ export default async function ModelPage({ params }: PageProps) {
   const staticModel = MODEL_PAGES[params.slug];
   const [cms, cmsModels] = await Promise.all([
     getVehicleModelBySlug(params.slug),
-    getVehicleModels(),
+    getNavModels(),
   ]);
 
   // Need at least static data to render
@@ -113,6 +116,8 @@ export default async function ModelPage({ params }: PageProps) {
         description={pick(cms?.description, s?.heroDescription || "")}
         heroImage={pick(cms?.heroImage, s?.heroImage || "")}
         heroIsVideo={cms?.heroIsVideo}
+        heroVideoUrl={cms?.heroVideoUrl}
+        heroVideoUrlMobile={cms?.heroVideoUrlMobile}
         price={pick(cms?.price, s?.price || "")}
       />
 

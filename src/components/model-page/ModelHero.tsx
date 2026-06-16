@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowDown } from "lucide-react";
 import { fadeInUp, staggerContainer } from "@/lib/motion";
 import OptimizedImage from "@/components/OptimizedImage";
+import { contentfulImageUrl } from "@/lib/image";
 
 interface ModelHeroProps {
   name: string;
@@ -12,6 +13,10 @@ interface ModelHeroProps {
   description: string;
   heroImage: string;
   heroIsVideo?: boolean;
+  /** External CDN video (Vercel Blob). Preferred over a Contentful video asset. */
+  heroVideoUrl?: string;
+  /** Optional mobile-specific CDN video; falls back to heroVideoUrl. */
+  heroVideoUrlMobile?: string;
   price: string;
 }
 
@@ -27,25 +32,40 @@ export default function ModelHero({
   description,
   heroImage,
   heroIsVideo,
+  heroVideoUrl,
+  heroVideoUrlMobile,
   price,
 }: ModelHeroProps) {
   const brandColor = brand === "OMODA" ? "text-accent" : "text-accent-alt-light";
 
+  // Prefer the external CDN video; fall back to a legacy Contentful video asset.
+  const videoSrc = heroVideoUrl || (heroIsVideo ? heroImage : "");
+  // Optional mobile-specific source (only meaningful when there's a desktop video).
+  const mobileVideoSrc = videoSrc ? heroVideoUrlMobile : "";
+  // When the video comes from the CDN, heroImage is the poster image.
+  const posterSrc = heroVideoUrl && heroImage
+    ? contentfulImageUrl(heroImage, { width: 1920, format: "webp", quality: 70 })
+    : undefined;
+
   return (
     <section className="relative min-h-[100svh] flex items-end pb-20 md:pb-28 overflow-hidden">
-      {/* Background image — served from Contentful CDN, optimized via next/image */}
+      {/* Background — CDN video (with poster) or Contentful image optimized via next/image */}
       <div className="absolute inset-0 z-0">
-        {heroIsVideo ? (
+        {videoSrc ? (
           <video
             autoPlay
             muted
             loop
             playsInline
             preload="metadata"
+            poster={posterSrc}
             aria-label={`${brand} ${name}`}
             className="w-full h-full object-cover"
           >
-            <source src={heroImage} type="video/mp4" />
+            {mobileVideoSrc && (
+              <source media="(max-width: 768px)" src={mobileVideoSrc} type="video/mp4" />
+            )}
+            <source src={videoSrc} type="video/mp4" />
           </video>
         ) : (
           <OptimizedImage

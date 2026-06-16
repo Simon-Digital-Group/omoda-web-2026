@@ -40,6 +40,10 @@ export default function ModelDesignSection({
   const nextImage = () =>
     setCurrentImage((i) => (i === images.length - 1 ? 0 : i + 1));
 
+  if (!heading && !description && (!images || images.length === 0) && (!highlights || highlights.length === 0)) {
+    return null;
+  }
+
   return (
     <section ref={ref} id={id} className="overflow-hidden">
       <motion.div

@@ -65,9 +65,6 @@ export default function OptimizedImage({
 }: OptimizedImageProps) {
   const [hasError, setHasError] = useState(false);
 
-  const isContentful = src.includes("ctfassets.net");
-  const isLocal = src.startsWith("/");
-
   // If image errored or src is empty, show placeholder
   if (hasError || !src) {
     return (
@@ -105,6 +102,9 @@ export default function OptimizedImage({
     setHasError(true);
     onError?.();
   };
+
+  const isContentful = src.includes("ctfassets.net");
+  const isLocal = src.startsWith("/");
 
   // Contentful images → use next/image with loader
   if (isContentful) {

@@ -19,6 +19,8 @@ export default function ModelSpecs({ specs, modelName }: ModelSpecsProps) {
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  if (!specs || specs.length === 0) return null;
+
   return (
     <section ref={ref} id="especificaciones" className="section-padding">
       <motion.div

@@ -27,6 +27,8 @@ export default function ModelFeatureGrid({
   const ref = useRef<HTMLElement>(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
+  if (!features || features.length === 0) return null;
+
   return (
     <section ref={ref} id={id} className="section-padding relative overflow-hidden border-t border-white/[0.06]">
 

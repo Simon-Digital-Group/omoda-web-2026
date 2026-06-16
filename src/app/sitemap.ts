@@ -1,11 +1,13 @@
 import type { MetadataRoute } from "next";
 import { ALL_MODEL_SLUGS } from "@/lib/models-data";
-import { getVehicleModels } from "@/lib/contentful";
+import { getNavModels } from "@/lib/contentful";
 
 const BASE = "https://omodajaecoo.com.uy";
 
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const cmsModels = await getVehicleModels().catch(() => []);
+  const cmsModels = await getNavModels().catch(() => []);
   const slugs = cmsModels.length > 0
     ? Array.from(new Set(cmsModels.map((m) => m.slug).filter(Boolean)))
     : ALL_MODEL_SLUGS;
